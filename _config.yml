@@ -1,1 +1,26 @@
+title: Rubick Blog
+author: Rubick
+email: osoleida@tutanota.de
+url: https://rbbck.github.io
+baseurl: ""
+description: Rubick Blog
+
+permalink: /:categories/:year/:month/:day/:title/
+favicon: "logo.png"
+goat_counter: "rubick"
+
 remote_theme: riggraz/no-style-please
+
+theme_config:
+  appearance: "dark"
+  back_home_text: ".." # customize text for homepage link in post layout
+  date_format: "%Y-%m-%d" # customize how date is formatted
+  show_description: false # show blog description in home page
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-multiple-languages-plugin
+
+languages: ["en", "pt-br"]
+exclude_from_localizations: ["assets"]

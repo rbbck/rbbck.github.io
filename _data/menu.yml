@@ -1,8 +1,43 @@
 entries:
+  en:
   - title: me
     entries:
+      - title: email
+        url: mailto:OSoLEIDa@tutanota.de
       - title: github
         url: http://github.com/rbbck/
-
-  - title: posts
-    post_list: true
+                
+  - title: all posts
+    post_list:
+      limit: 5
+      show_more: true
+      show_more_text: See archive...
+      show_more_url: archive.html
+      
+  - title: write ups
+    post_list:
+      category: writeup
+      show_more: true
+      show_more_text: See more posts...
+      show_more_url: writeup-archive.html
+  pt-br:
+  - title: eu
+    entries:
+      - title: email
+        url: mailto:OSoLEIDa@tutanota.de
+      - title: github
+        url: http://github.com/rbbck/
+        
+  - title: todos os posts
+    post_list:
+      limit: 5
+      show_more: true
+      show_more_text: See archive...
+      show_more_url: archive.html
+      
+  - title: write ups
+    post_list:
+      category: writeup
+      show_more: true
+      show_more_text: See more posts...
+      show_more_url: writeup-archive.html
