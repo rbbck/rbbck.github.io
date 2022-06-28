@@ -1,4 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="pt-br"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="pt-br" /><updated>2022-06-24T22:02:53-03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rubick Blog</title><subtitle>Rubick Blog</subtitle><author><name>Rubick</name></author><entry xml:lang="pt-br"><title type="html">THM CMesS</title><link href="http://localhost:4000/writeup/2022/05/20/thm_cmess/" rel="alternate" type="text/html" title="THM CMesS" /><published>2022-05-20T00:00:00-03:00</published><updated>2022-05-20T00:00:00-03:00</updated><id>http://localhost:4000/writeup/2022/05/20/thm_cmess</id><content type="html" xml:base="http://localhost:4000/writeup/2022/05/20/thm_cmess/"><![CDATA[<p><img src="https://user-images.githubusercontent.com/77530544/171437979-f426c564-871e-40fd-bd56-910690e688b6.png" alt="Pasted image 20220601071802" /></p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="pt-br"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="pt-br" /><updated>2022-06-28T01:46:28-03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rubick Blog</title><subtitle>Rubick Blog</subtitle><author><name>Rubick</name></author><entry xml:lang="pt-br"><title type="html">THM Sakura Room</title><link href="http://localhost:4000/pt-br/writeup/2022/06/24/thm_sakura_room/" rel="alternate" type="text/html" title="THM Sakura Room" /><published>2022-06-24T00:00:00-03:00</published><updated>2022-06-24T00:00:00-03:00</updated><id>http://localhost:4000/pt-br/writeup/2022/06/24/thm_sakura_room</id><content type="html" xml:base="http://localhost:4000/pt-br/writeup/2022/06/24/thm_sakura_room/"><![CDATA[<p>exiftool sakurapwnedletter.svg
+SakuraSnowAngelAiko</p>
+
+<p>![[Pasted image 20220627235902.png]]</p>
+
+<h1 id="primeiros-passos">Primeiros passos</h1>
+<p>Esta room é pensada para testar uma variedade de técnicas de <strong>OSINT</strong>  (Open Source Intelligence), iremos passar por um exemplo de <strong>investigação</strong> que visa identificar um número de identificadores e outros pedaços de informação para ajudar a <strong>capturar um cibercriminoso</strong>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NOTE: All answers can be obtained via passive OSINT techniques, DO NOT attempt any active techniques such as reaching out to account owners, password resets, etc to solve these challenges.
+</code></pre></div></div>
+
+<p>Também somos avisados de que nenhum <strong>OSINT ativo</strong> será necessário. Veja a seguir <strong>alguns</strong> exemplos distingui-las:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>OSINT Passivo</th>
+      <th>OSINT Ativo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Não faz contato direto</td>
+      <td>Pode ocorrer contato entre os lados</td>
+    </tr>
+    <tr>
+      <td>Scans passivos, mais oculto</td>
+      <td>Maior risco de detecção</td>
+    </tr>
+    <tr>
+      <td>Juntar informações disponíveis, hospedadas em terceiros</td>
+      <td>Engenharia social, ex: enviar um link malicioso para vítima</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="primeira-flag">Primeira flag</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>What username does the attacker go by?
+</code></pre></div></div>
+
+<p>Nos é pedido o <strong>username</strong> do criminoso. Para obter, nos é fornecido um panorama:
+O <a href="https://www.osintdojo.com">OSINT Dojo</a> foi vítima de um <strong>ciberataque</strong> e durante análises forenses, foi achada uma imagem deixada pelo autor do crime. Quem sabe ela não tem alguma pista que nos permitiria apontar uma origem?</p>
+
+<p>![[Pasted image 20220628011354.png]]</p>
+
+<p>Com isso temos nosso ponto de partida. Em uma imagem podem haver inúmeras informações escondidas, seja porque <a href="https://www.gta.ufrj.br/ensino/eel878/redes1-2016-1/16_1/esteganografia/">alguém escondeu</a>  lá, ou, como no nosso caso, porque alguém <strong>esqueceu de checar o próprio rastro</strong>. O <em>Exchangeable image file format</em> ou simplesmente <strong>EXIF</strong> é um <strong>padrão para armazenar informações na fotografia digital</strong>. Resumidamente, é um conjunto de informações sobre (e contidas em) uma imagem, tais como sua <strong>resolução</strong> (largura e altura), <strong>data de modificação</strong>, <strong>fabricante da câmera</strong>, etc. Em alguns casos, pode conter até mesmo dados de <strong>geolocalização</strong>.</p>
+
+<p>Iremos utilizar a ferramenta <a href="https://exiftool.org/">ExifTool</a>, que serve para ler, gravar e editar <strong>metadados</strong>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exiftool sakurapwnedletter.svg
+ExifTool Version Number         : 12.42  
+File Name                       : sakurapwnedletter.svg  
+Directory                       : .  
+File Size                       : 850 kB  
+File Modification Date/Time     : 2022:06:28 01:28:26-03:00  
+File Access Date/Time           : 2022:06:28 01:28:26-03:00  
+File Inode Change Date/Time     : 2022:06:28 01:28:26-03:00  
+File Permissions                : -rw-r--r--  
+File Type                       : SVG  
+File Type Extension             : svg  
+MIME Type                       : image/svg+xml  
+Xmlns                           : http://www.w3.org/2000/svg  
+Image Width                     : 116.29175mm  
+Image Height                    : 174.61578mm  
+View Box                        : 0 0 116.29175 174.61578  
+SVG Version                     : 1.1  
+ID                              : svg8  
+Version                         : 0.92.5 (2060ec1f9f, 2020-04-08)  
+Docname                         : pwnedletter.svg  
+Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png  
+Export-xdpi                     : 96  
+Export-ydpi                     : 96  
+Metadata ID                     : metadata5  
+Work Format                     : image/svg+xml  
+Work Type                       : http://purl.org/dc/dcmitype/StillImage  
+Work Title                      :
+</code></pre></div></div>
+
+<p>Temos inúmeras saídas aqui, mas vamos focar em uma específica. <strong>Export-filename</strong> possui como valor o caminho do arquivo na hora de sua exportação:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png
+</code></pre></div></div>
+<p>E com isso descobrimos o nome de usuário do nosso atacante.</p>
+
+<pre class=""> ______
+|_,.,--\
+   ||
+   ||
+   ##
+   ##
+</pre>]]></content><author><name>Rubick</name></author><category term="writeup" /><summary type="html"><![CDATA[exiftool sakurapwnedletter.svg SakuraSnowAngelAiko]]></summary></entry><entry xml:lang="pt-br"><title type="html">THM CMesS</title><link href="http://localhost:4000/writeup/2022/05/20/thm_cmess/" rel="alternate" type="text/html" title="THM CMesS" /><published>2022-05-20T00:00:00-03:00</published><updated>2022-05-20T00:00:00-03:00</updated><id>http://localhost:4000/writeup/2022/05/20/thm_cmess</id><content type="html" xml:base="http://localhost:4000/writeup/2022/05/20/thm_cmess/"><![CDATA[<p><img src="https://user-images.githubusercontent.com/77530544/171437979-f426c564-871e-40fd-bd56-910690e688b6.png" alt="Pasted image 20220601071802" /></p>
 
 <h1 id="primeiros-passos">Primeiros passos</h1>
 <p>É pedido que adicionemos o <strong>IP da máquina</strong> ao nosso arquivo <strong>/etc/hosts</strong>:</p>
