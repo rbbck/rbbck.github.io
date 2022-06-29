@@ -1,4 +1,4 @@
-I"!1<p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
+I"�1<p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
 
 <h1 id="primeiros-passos">Primeiros passos</h1>
 <p>Esta room é pensada para testar uma variedade de técnicas de <strong>OSINT</strong><sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, vamos experienciar um exemplo de <strong>investigação</strong> que visa <strong>achar alguns identificadores</strong> e outros <strong>pedaços de informações</strong> afim de capturar um cibercriminoso.</p>
@@ -131,8 +131,10 @@ uid           SakuraSnowAngel83@protonmail.com
 sub   rsa3072 2021-01-23 [E] [expires: 2023-01-22]
 </code></pre></div></div>
 
-<p>Revelando o <strong>email de nosso ciberpirata</strong>:
-	uid           SakuraSnowAngel83@protonmail.com</p>
+<p>Revelando o <strong>email de nosso ciberpirata</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uid           SakuraSnowAngel83@protonmail.com  
+</code></pre></div></div>
 
 <hr />
 

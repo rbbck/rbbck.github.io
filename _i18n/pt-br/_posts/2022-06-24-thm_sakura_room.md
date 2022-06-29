@@ -117,6 +117,7 @@ Se baixarmos a chave, rodarmos o [gnu](https://gnupg.org/) **sem fornecer nenhum
 	sub   rsa3072 2021-01-23 [E] [expires: 2023-01-22]
 
 Revelando o **email de nosso ciberpirata**:
+
 	uid           SakuraSnowAngel83@protonmail.com  
 
 ---
