@@ -335,9 +335,9 @@ Basta utilizar um mapa e ir atrás, é bem fácil achar o local no Japão se ori
 # Décima terceira flag 
 > What city does the attacker likely consider "home"?
 
-Duas vias são possíveis para esta flag:
-- Podemos pode usar o SSID do WiFi da cidade de Aiko, que conta no Deep Paste
-- Ou podemos ver em qual cidade aquele BSSID que colocamos no Wigle anteriormente se encontra!
+**Duas** vias são possíveis para esta flag:
+- Ver em **qual cidade** aquele **BSSID que colocamos no Wigle anteriormente** se encontra
+- Usar o **SSID** do **WiFi da cidade de Aiko** que consta no Deep Paste
 
 ---
 
