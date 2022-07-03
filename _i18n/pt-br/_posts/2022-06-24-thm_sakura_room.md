@@ -332,7 +332,7 @@ Basta utilizar um mapa e ir atrás, é bem fácil achar o local no Japão se ori
 
 ![](/assets/Pasted image 20220703023333.png)
 
-# Décima tercecira flag 
+# Décima terceira flag 
 > What city does the attacker likely consider "home"?
 
 Duas vias são possíveis para esta flag:
