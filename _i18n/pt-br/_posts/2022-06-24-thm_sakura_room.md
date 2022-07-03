@@ -225,10 +225,6 @@ Analisando a última conta do Twitter que encontramos, somos capazes de achar um
 
 ![](/assets/Pasted image 20220630212522.png)
 
-Imagem completa:
-
-![](https://pbs.twimg.com/media/EsdhaUSVkAAM803?format=png&name=small)
-
 Okay dokey. Então sabemos que o nosso atacante (por algum motivo) **postou suas senhas de acesso WiFi em algum lugar**.
 Outro ponto que nos facilita bastante é que o **ID do post está completo**. Só falta saber **onde** esta lista foi hospedada.
 
@@ -236,7 +232,7 @@ Logo em sequência à este tweet, o Aiko responde:
 
 ![](/assets/Pasted image 20220630213801.png)
 
-O print cita "**Dark Web**" e "**Deep Paste**" (em caixa alta, ficou até cômico). Então sabemos que o nosso site se encontra na [rede Onion](https://www.torproject.org/). 
+O tweet cita "**Dark Web**" e "**Deep Paste**" (em caixa alta, ficou até cômico). Então sabemos que o nosso site se encontra na [rede Onion](https://www.torproject.org/). 
 A questão aqui se torna agora **COMO** achar este endereço, considerando que **indexar** páginas nessas redes alternativas sempre exige um trâmite.
 
 Ao achar (no Google, ou num DuckDuckGo da vida) algum site que liste endereços famosos .onion, achar o do DeepPaste se torna fácil ([o endereço v3](https://support.torproject.org/onionservices/v2-deprecation/)).
@@ -257,7 +253,7 @@ Depois de encontrá-lo, basta inserir o ID do post no campo de pesquisa e a pág
 
 Para achar o BSSID[^4], será preciso uma conta no [wigle](https://wigle.net/) para utilizar a função de pesquisa avançada.
 
-Com apesquisa simples, só conseguimos ter noção da geolocalização do BSSID, não seu identificador:
+Com a pesquisa simples, só conseguimos ter noção da geolocalização do BSSID, não seu identificador:
 
 ![](/assets/Pasted image 20220703005717.png)
 
@@ -277,7 +273,7 @@ Dando uma olhada pelo Twitter dele, encontramos isto:
 
 ![](/assets/Pasted image 20220701194313.png)
 
-Até o momento, admito não ser bom em **IMINT**[^5], fui pego nesta parte, o que me motivou a querer fazer a [Searchlight - IMINT](https://tryhackme.com/room/searchlightosint), aprender e explorar mais desta área. Tampouco conhecia alguma ferramenta, então tive de recorrer à ajuda de outros. Todavia tentarei ilustrar de forma que todos nós consigamos **aprender!**
+Até o momento, admito não ser bom em **IMINT**[^5], fui pego nesta parte, o que me motivou a querer fazer a [room Searchlight - IMINT](https://tryhackme.com/room/searchlightosint), aprender e explorar mais desta área. Tampouco conhecia alguma ferramenta, então tive de recorrer à ajuda de outros. Todavia tentarei ilustrar de forma que todos nós consigamos **aprender!**
 
 Na imagem é possível ver um **obelisco** beeem lá longe no centro da imagem:
 
@@ -346,5 +342,5 @@ Basta utilizar um mapa e ir atrás, é bem fácil achar o local no Japão se ori
 [^1]: *Open Source Intelligence*
 [^2]: *Pretty Good Privacy*
 [^3]:  Ler sobre [criptografia de chave pública](https://pt.wikipedia.org/wiki/Criptografia_de_chave_p%C3%BAblica).
-[^4]: *Basic Service Set Identifier*; Geralmente se refere ao endereço MAC, isto é, um identificador único, de um adaptador ou de um ponto de acesso ou uma derivação. Referência: https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses
+[^4]: *Basic Service Set Identifier*; Geralmente se refere ao endereço MAC, isto é, um identificador único, de um adaptador ou de um ponto de acesso ou uma derivação. Referência: [https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses](https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses)
 [^5]: *Imagery Intelligence*; "Das três fontes de informações mais utilizadas na área de  inteligência, a chamada área de inteligência de imagens, ou imint (imagery intelligence), é a mais recente. [...] o desenvolvimento de imint como uma disciplina especializada de coleta de informações deu-se fundamentalmente a partir da associação entre o uso de câmerasfotográficas e plataformas aero-espaciais." CEPIK, Marco. Serviços de Inteligência: Agilidade e Transparência como Dilemas de Institucionalização. Tese (Doutorado em Ciência Política) – Instituto Universitário de Pesquisas do Rio de Janeiro. Rio de Janeiro, p. 310. 2001. Disponível em: [https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf](https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf)

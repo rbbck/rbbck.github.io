@@ -1,4 +1,4 @@
-I";R<p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
+I"_R<p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
 
 <h1 id="primeiros-passos">Primeiros passos</h1>
 <p>Esta room é pensada para testar uma variedade de técnicas de <strong>OSINT</strong><sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, vamos experienciar um exemplo de <strong>investigação</strong> que visa <strong>achar alguns identificadores</strong> e outros <strong>pedaços de informações</strong> afim de capturar um cibercriminoso.</p>
@@ -257,10 +257,6 @@ Analisando a última conta do Twitter que encontramos, somos capazes de achar um
 
 <p><img src="/assets/Pasted image 20220630212522.png" alt="" /></p>
 
-<p>Imagem completa:</p>
-
-<p><img src="https://pbs.twimg.com/media/EsdhaUSVkAAM803?format=png&amp;name=small" alt="" /></p>
-
 <p>Okay dokey. Então sabemos que o nosso atacante (por algum motivo) <strong>postou suas senhas de acesso WiFi em algum lugar</strong>.
 Outro ponto que nos facilita bastante é que o <strong>ID do post está completo</strong>. Só falta saber <strong>onde</strong> esta lista foi hospedada.</p>
 
@@ -268,7 +264,7 @@ Outro ponto que nos facilita bastante é que o <strong>ID do post está completo
 
 <p><img src="/assets/Pasted image 20220630213801.png" alt="" /></p>
 
-<p>O print cita “<strong>Dark Web</strong>” e “<strong>Deep Paste</strong>” (em caixa alta, ficou até cômico). Então sabemos que o nosso site se encontra na <a href="https://www.torproject.org/">rede Onion</a>. 
+<p>O tweet cita “<strong>Dark Web</strong>” e “<strong>Deep Paste</strong>” (em caixa alta, ficou até cômico). Então sabemos que o nosso site se encontra na <a href="https://www.torproject.org/">rede Onion</a>. 
 A questão aqui se torna agora <strong>COMO</strong> achar este endereço, considerando que <strong>indexar</strong> páginas nessas redes alternativas sempre exige um trâmite.</p>
 
 <p>Ao achar (no Google, ou num DuckDuckGo da vida) algum site que liste endereços famosos .onion, achar o do DeepPaste se torna fácil (<a href="https://support.torproject.org/onionservices/v2-deprecation/">o endereço v3</a>).</p>
@@ -293,7 +289,7 @@ A questão aqui se torna agora <strong>COMO</strong> achar este endereço, consi
 
 <p>Para achar o BSSID<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>, será preciso uma conta no <a href="https://wigle.net/">wigle</a> para utilizar a função de pesquisa avançada.</p>
 
-<p>Com apesquisa simples, só conseguimos ter noção da geolocalização do BSSID, não seu identificador:</p>
+<p>Com a pesquisa simples, só conseguimos ter noção da geolocalização do BSSID, não seu identificador:</p>
 
 <p><img src="/assets/Pasted image 20220703005717.png" alt="" /></p>
 
@@ -315,7 +311,7 @@ A questão aqui se torna agora <strong>COMO</strong> achar este endereço, consi
 
 <p><img src="/assets/Pasted image 20220701194313.png" alt="" /></p>
 
-<p>Até o momento, admito não ser bom em <strong>IMINT</strong><sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup>, fui pego nesta parte, o que me motivou a querer fazer a <a href="https://tryhackme.com/room/searchlightosint">Searchlight - IMINT</a>, aprender e explorar mais desta área. Tampouco conhecia alguma ferramenta, então tive de recorrer à ajuda de outros. Todavia tentarei ilustrar de forma que todos nós consigamos <strong>aprender!</strong></p>
+<p>Até o momento, admito não ser bom em <strong>IMINT</strong><sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup>, fui pego nesta parte, o que me motivou a querer fazer a <a href="https://tryhackme.com/room/searchlightosint">room Searchlight - IMINT</a>, aprender e explorar mais desta área. Tampouco conhecia alguma ferramenta, então tive de recorrer à ajuda de outros. Todavia tentarei ilustrar de forma que todos nós consigamos <strong>aprender!</strong></p>
 
 <p>Na imagem é possível ver um <strong>obelisco</strong> beeem lá longe no centro da imagem:</p>
 
@@ -374,15 +370,15 @@ A questão aqui se torna agora <strong>COMO</strong> achar este endereço, consi
 
 <p><img src="/assets/Pasted image 20220703023333.png" alt="" /></p>
 
-<h1 id="décima-tercecira-flag">Décima tercecira flag</h1>
+<h1 id="décima-terceira-flag">Décima terceira flag</h1>
 <blockquote>
   <p>What city does the attacker likely consider “home”?</p>
 </blockquote>
 
-<p>Duas vias são possíveis para esta flag:</p>
+<p><strong>Duas</strong> vias são possíveis para esta flag:</p>
 <ul>
-  <li>Podemos pode usar o SSID do WiFi da cidade de Aiko, que conta no Deep Paste</li>
-  <li>Ou podemos ver em qual cidade aquele BSSID que colocamos no Wigle anteriormente se encontra!</li>
+  <li>Ver em <strong>qual cidade</strong> aquele <strong>BSSID que colocamos no Wigle anteriormente</strong> se encontra</li>
+  <li>Usar o <strong>SSID</strong> do <strong>WiFi da cidade de Aiko</strong> que consta no Deep Paste</li>
 </ul>
 
 <hr />
@@ -401,7 +397,7 @@ A questão aqui se torna agora <strong>COMO</strong> achar este endereço, consi
       <p>Ler sobre <a href="https://pt.wikipedia.org/wiki/Criptografia_de_chave_p%C3%BAblica">criptografia de chave pública</a>. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:4" role="doc-endnote">
-      <p><em>Basic Service Set Identifier</em>; Geralmente se refere ao endereço MAC, isto é, um identificador único, de um adaptador ou de um ponto de acesso ou uma derivação. Referência: https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p><em>Basic Service Set Identifier</em>; Geralmente se refere ao endereço MAC, isto é, um identificador único, de um adaptador ou de um ponto de acesso ou uma derivação. Referência: <a href="https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses">https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses</a> <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:5" role="doc-endnote">
       <p><em>Imagery Intelligence</em>; “Das três fontes de informações mais utilizadas na área de  inteligência, a chamada área de inteligência de imagens, ou imint (imagery intelligence), é a mais recente. […] o desenvolvimento de imint como uma disciplina especializada de coleta de informações deu-se fundamentalmente a partir da associação entre o uso de câmerasfotográficas e plataformas aero-espaciais.” CEPIK, Marco. Serviços de Inteligência: Agilidade e Transparência como Dilemas de Institucionalização. Tese (Doutorado em Ciência Política) – Instituto Universitário de Pesquisas do Rio de Janeiro. Rio de Janeiro, p. 310. 2001. Disponível em: <a href="https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf">https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf</a> <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
