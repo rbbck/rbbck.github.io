@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "THM Sakura Room"
+title: "TryHackMe Sakura Room"
 category: writeup
 lang: pt-br
 ref: sakura_room-thm
