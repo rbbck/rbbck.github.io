@@ -111,6 +111,7 @@ If we download the key, run [gnu](https://gnupg.org/) **without providing any pa
 	gpg publickey
 	
 	gpg: WARNING: no command supplied.  Trying to guess what you mean ...  
+	pub   rsa3072 2021-01-23 [SC] [expires: 2023-01-22]  
 	     A6519F273BF88E9126B0F4C5ECDD0FD294110450  
 	uid           SakuraSnowAngel83@protonmail.com  
 	sub   rsa3072 2021-01-23 [E] [expires: 2023-01-22]
