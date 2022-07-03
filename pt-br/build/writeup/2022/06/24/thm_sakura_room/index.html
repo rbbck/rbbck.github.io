@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>TryHackMe Sakura Room</title><!-- Begin Jekyll SEO tag v2.8.0 -->
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="TryHackMe Sakura Room" />
+<meta name="author" content="Rubick" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Rubick Blog" />
+<meta property="og:description" content="Rubick Blog" />
+<link rel="canonical" href="https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/" />
+<meta property="og:url" content="https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/" />
+<meta property="og:site_name" content="Rubick Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-24T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TryHackMe Sakura Room" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rubick"},"dateModified":"2022-06-24T00:00:00+00:00","datePublished":"2022-06-24T00:00:00+00:00","description":"Rubick Blog","headline":"TryHackMe Sakura Room","mainEntityOfPage":{"@type":"WebPage","@id":"https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/"},"url":"https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/"}</script>
+<!-- End Jekyll SEO tag -->
+<link type="application/atom+xml" rel="alternate" href="https://rbbck.github.io/feed.xml" title="Rubick Blog" />
+  
+  
+  
+    
+  <link rel="alternate" hreflang="en" href="/writeup/2022/06/24/thm_sakura_room/" />
+    
+  <link rel="alternate" hreflang="en" href="/writeup/2022/05/20/thm_cmess/" />
+    
+  
+	
+
+  <link rel="shortcut icon" type="image/x-icon" href="/logo.png" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body a="dark">
+    <main class="page-content" aria-label="Content">
+      <div class="w">
+        <a href="/">..</a><article>
+  <p class="post-meta">
+    <time datetime="2022-06-24 00:00:00 +0000">2022-06-24</time>
+  </p>
+  
+  <h1>TryHackMe Sakura Room</h1>
+
+  <p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
+
+<h1 id="first-steps">First steps</h1>
+<p>This room is designed to test a variety of <strong>OSINT</strong><sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> techniques, we are going to experience an example of <strong>investigation</strong> that aims to <strong>find some identifiers</strong> and other <strong>pieces of information</strong> in order to catch a cybercriminal.</p>
+
+<blockquote>
+  <p>NOTE: All answers can be obtained via passive OSINT techniques, DO NOT attempt any active techniques such as reaching out to account owners, password resets, etc to solve these challenges.</p>
+</blockquote>
+
+<p>We are also warned that no <strong>active OSINT</strong> will be required. See below <strong>some</strong> examples to distinguish:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Passive OSINT</th>
+      <th>Active OSINT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>No direct contact</td>
+      <td>Contact may occur</td>
+    </tr>
+    <tr>
+      <td>Passive scanning, more hidden</td>
+      <td>More aggressive and intrusive posture, higher risk of detection</td>
+    </tr>
+    <tr>
+      <td>Gathering available information hosted on third parties</td>
+      <td>Social engineering, e.g. sending a malicious link to the victim</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="first-flag">First flag</h1>
+<blockquote>
+  <p>What username does the attacker go by?</p>
+</blockquote>
+
+<p>We are asked for the criminal’s <strong>username</strong>. In addition, an overview is provided:</p>
+<blockquote>
+  <p>The <a href="https://www.osintdojo.com">OSINT Dojo</a> was the victim of a cyberattack and during forensic analysis, an image left behind by the hacker was found. Perhaps it contains some clues that would allow us to point a direction?</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220628011354.png" alt="" /></p>
+
+<p>With this we have our starting point. In an image there can be a lot of hidden information, either because <a href="https://en.wikipedia.org/wiki/Steganography">someone hid it</a> there, or, as in our case, because someone <strong>forgot to check its own track</strong>. The <strong><em>Exchangeable image file format</em></strong> or simply <strong>EXIF</strong> is a <strong>standard for storing information in digital photography</strong>. In short, it is a set of information about (and contained in) an image, such as its <strong>resolution</strong>, <strong>modification date</strong>, <strong>camera manufacturer</strong>, etc. In some cases it may even contain <strong>geolocation</strong> data.</p>
+
+<p>We will use the [ExifTool] tool (https://exiftool.org/), which is used to read, write and edit <strong>metadata</strong>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exiftool sakurapwnedletter.svg
+ExifTool Version Number         : 12.42  
+File Name                       : sakurapwnedletter.svg  
+Directory                       : .  
+File Size                       : 850 kB  
+File Modification Date/Time     : 2022:06:28 01:28:26-03:00  
+File Access Date/Time           : 2022:06:28 01:28:26-03:00  
+File Inode Change Date/Time     : 2022:06:28 01:28:26-03:00  
+File Permissions                : -rw-r--r--  
+File Type                       : SVG  
+File Type Extension             : svg  
+MIME Type                       : image/svg+xml  
+Xmlns                           : http://www.w3.org/2000/svg  
+Image Width                     : 116.29175mm  
+Image Height                    : 174.61578mm  
+View Box                        : 0 0 116.29175 174.61578  
+SVG Version                     : 1.1  
+ID                              : svg8  
+Version                         : 0.92.5 (2060ec1f9f, 2020-04-08)  
+Docname                         : pwnedletter.svg  
+Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png  
+Export-xdpi                     : 96  
+Export-ydpi                     : 96  
+Metadata ID                     : metadata5  
+Work Format                     : image/svg+xml  
+Work Type                       : http://purl.org/dc/dcmitype/StillImage  
+Work Title                      :
+</code></pre></div></div>
+
+<p>We have numerous outputs here, but let’s focus on a specific one. <strong>Export-filename</strong> takes as its value the path of the file at the time of export:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png
+</code></pre></div></div>
+<p>And with that we find out the username of our attacker.</p>
+
+<hr />
+
+<h1 id="second-flag">Second flag</h1>
+<blockquote>
+  <p>What is the full email address used by the attacker?</p>
+</blockquote>
+
+<p>For the attacker’s <strong>email</strong>, it is either valid to use an automated tool or to go directly to the best known websites and social networks and enter the username we found before, i.e. a <strong>manual approach</strong>.</p>
+
+<p>A <strong>very good tool</strong> is <a href="https://github.com/sherlock-project/sherlock">Sherlock</a>, written in <strong>Python</strong>, that provided a username, the software will go after it through locations on the internet.</p>
+
+<p>Example usage:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 sherlock.py --verbose SakuraSnowAngelAiko
+
+[*] Checking username SakuraSnowAngelAiko on:  
+  
+  
+[+] [5058ms] GitHub: https://www.github.com/SakuraSnowAngelAiko  
+[+] [11563ms] Reddit: https://www.reddit.com/user/SakuraSnowAngelAiko
+[...]
+</code></pre></div></div>
+
+<p>One of the outputs is his <strong>GitHub</strong>, which is of great interest to us:</p>
+
+<p><img src="/assets/Pasted image 20220628232728.png" alt="" /></p>
+
+<p>These are the <strong>fixed repositories</strong> of our attacker:</p>
+
+<p><img src="/assets/Pasted image 20220628233553.png" alt="" /></p>
+
+<p>A special highlight is the <strong>PGP</strong><sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> repository, where the attacker shares his <strong>public key</strong><sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup>.</p>
+
+<p><img src="/assets/Pasted image 20220629014758.png" alt="" /></p>
+
+<p>If we download the key, run <a href="https://gnupg.org/">gnu</a> <strong>without providing any parameters</strong>, passing the <strong>publickey we downloaded</strong>, the program will <strong>print</strong> the key:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://github.com/sakurasnowangelaiko/PGP/blob/main/publickey
+gpg publickey
+
+gpg: WARNING: no command supplied.  Trying to guess what you mean ...  
+pub   rsa3072 2021-01-23 [SC] [expires: 2023-01-22]  
+     A6519F273BF88E9126B0F4C5ECDD0FD294110450  
+uid           SakuraSnowAngel83@protonmail.com  
+sub   rsa3072 2021-01-23 [E] [expires: 2023-01-22]
+</code></pre></div></div>
+
+<p>Revealing the <strong>email of our cyberpirate</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uid           SakuraSnowAngel83@protonmail.com  
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="third-flag">Third flag</h1>
+<blockquote>
+  <p>What is the attacker’s full real name?</p>
+</blockquote>
+
+<p>That was easy peasy! Putting the <strong>nickname</strong> of GitHub into Google, <strong>our first result already gives us the answer</strong>, <strong>it’s name</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629030444.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220629030620.png" alt="" /></p>
+
+<hr />
+
+<h1 id="fourth-flag">Fourth flag</h1>
+<blockquote>
+  <p>What cryptocurrency does the attacker own a cryptocurrency wallet for?</p>
+</blockquote>
+
+<p>Our goal now is to find out what <strong>cryptocurrency</strong> Aiko exchanges. Do you remember the repositories of our software engineer?</p>
+
+<p>If you notice, the fixed ones add up to only <strong>five</strong>, when in reality he has <strong>nine</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629032530.png" alt="" /></p>
+
+<p>One of them being called “ETH”, an acronym for “<a href="https://ethereum.org/en/">Ethereum</a>”, one of the most famous <strong>cryptos</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629032858.png" alt="" /></p>
+
+<p>Entering <strong>ETH</strong> into TryHackMe, the answer was accepted, however, other repositories may indicate that it would also use <strong>Litecoin</strong> and <strong>Bitcoin</strong>.</p>
+
+<hr />
+
+<h1 id="fifth-flag">Fifth flag</h1>
+<blockquote>
+  <p>What is the attacker’s cryptocurrency wallet address?</p>
+</blockquote>
+
+<p>To find the <strong>wallet address</strong> of the hacker, we will need to go back in time.
+But don’t worry, we won’t need the DeLorean!</p>
+
+<p>Take a look at the <strong>ETH</strong> repository page:</p>
+
+<p><img src="/assets/Pasted image 20220629033224.png" alt="" /></p>
+
+<p>You notice that <strong>two commits</strong> have been made. Let’s see what has changed? By clicking on the little clock we see:</p>
+
+<p><img src="/assets/Pasted image 20220629033630.png" alt="" /></p>
+
+<p>And when you click to see the commit “Update miningscript”:</p>
+
+<p><img src="/assets/Pasted image 20220629033717.png" alt="" /></p>
+
+<p>That’s right! The <strong>address of it’s digital wallet</strong> being hidden.</p>
+
+<hr />
+
+<h1 id="sixth-flag">Sixth flag</h1>
+<blockquote>
+  <p>What mining pool did the attacker receive payments from on January 23, 2021 UTC?</p>
+</blockquote>
+
+<p>Inserting our previous <strong>flag</strong> into <a href="https://etherscan.io/">Etherscan</a>:</p>
+
+<p><img src="/assets/Pasted image 20220629034349.png" alt="" /></p>
+
+<p>We found out that the wallet does in fact exist:</p>
+
+<p><img src="/assets/Pasted image 20220629034431.png" alt="" /></p>
+
+<p>Now we just need to go to the <strong>transactions</strong> and look for <strong>who made payments</strong> to this destination <strong>on January 23, 2021</strong> as the flag calls for:</p>
+
+<p><img src="/assets/Pasted image 20220629034918.png" alt="" />
+We have unraveled yet another one! The sender of this transaction was “<strong>Ethermine</strong>”.</p>
+
+<hr />
+
+<h1 id="seventh-flag">Seventh flag</h1>
+<blockquote>
+  <p>What other cryptocurrency did the attacker exchange with using their cryptocurrency wallet?</p>
+</blockquote>
+
+<p>What other <strong>cryptocurrency</strong> did our target use?
+Still on the transactions page we find this answer:</p>
+
+<p><img src="/assets/Pasted image 20220629040200.png" alt="" /></p>
+
+<p><strong>Tether</strong>! A <strong>cryptocurrency</strong> that aims to have a 1:1 quotation ratio with the <strong>US dollar</strong></p>
+
+<h1 id="eighth-flag">Eighth flag</h1>
+<blockquote>
+  <p>What is the attacker’s current Twitter handle?</p>
+</blockquote>
+
+<p>To find the Twitter <em>username</em> of our attacker, the following information is provided:</p>
+
+<blockquote>
+  <p>Just as we thought, the cybercriminal is fully aware that we are gathering information about them after their attack. They were even so brazen as to message the OSINT Dojo on Twitter and taunt us for our efforts. The Twitter account which they used appears to use a different username than what we were previously tracking, maybe there is some additional information we can locate to get an idea of where they are heading to next?</p>
+</blockquote>
+
+<p><img src="https://raw.githubusercontent.com/OsintDojo/public/main/taunt.png" alt="" /></p>
+
+<p>Searching this new username in any search engine should return the account
+<strong>@SakuraLoverAiko</strong></p>
+
+<p>In that account, there is a tweet saying “Hi! I am <strong>@AikoAbe3!</strong>”</p>
+
+<p><img src="/assets/Pasted image 20220630212419.png" alt="" /></p>
+
+<hr />
+
+<h1 id="ninth-flag">Ninth flag</h1>
+<blockquote>
+  <p>What is the URL for the location where the attacker saved their WiFi  SSIDs and passwords?</p>
+</blockquote>
+
+<p>This flag I admit I found unexpected but interesting.
+By analyzing the last Twitter account we found, we are able to find a <strong>not at all suspicious</strong> tweet:</p>
+
+<p><img src="/assets/Pasted image 20220630212522.png" alt="" /></p>
+
+<p>Okay dokey. So we know that our attacker (for some reason) <strong>posted their WiFi access passwords somewhere</strong>.
+Another point that makes it a lot easier for us is that the <strong>ID of the post is complete</strong>. All that’s left is to know <strong>where</strong> this list was hosted.</p>
+
+<p>Right after this tweet, Aiko replies:</p>
+
+<p><img src="/assets/Pasted image 20220630213801.png" alt="" /></p>
+
+<p>The tweet quotes “<strong>Dark Web</strong>” and “<strong>Deep Paste</strong>” (in capital letters, it looks comical). So we know that our site is on the <a href="https://www.torproject.org/">Onion network</a>. 
+The question here becomes now <strong>HOW</strong> to find this address, considering that to <strong>index</strong> pages on these alternative networks always requires some effort.</p>
+
+<p>If you find (for instance, on Google or DuckDuckGo) any site that lists famous .onion addresses, finding DeepPaste’s address becomes easy (<a href="https://support.torproject.org/onionservices/v2-deprecation/">the v3 address</a>).</p>
+
+<blockquote>
+  <p>Deep Paste may be offline at the time you are working on this room. For this reason, TryHackMe provides the address in the hint</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220701192938.png" alt="" /></p>
+
+<p>Once you find it, just enter the ID of the post in the search field and the page will show up. In it some <strong>SSIDs</strong> and some <strong>passwords</strong> have been stored.</p>
+
+<p><img src="/assets/Pasted image 20220701193518.png" alt="" /></p>
+
+<hr />
+
+<h1 id="tenth-flag">Tenth flag</h1>
+
+<blockquote>
+  <p>What is the BSSID for the attacker’s Home WiFi?</p>
+</blockquote>
+
+<p>To find the BSSID<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>, you will need an account at <a href="https://wigle.net/">wigle</a> to use the advanced search function.</p>
+
+<p>With a simple search, we only get a sense of the geolocation of the BSSID, not its identifier:</p>
+
+<p><img src="/assets/Pasted image 20220703005717.png" alt="" /></p>
+
+<p>Now with advanced search:</p>
+
+<p><img src="/assets/Pasted image 20220703010734.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703010722.png" alt="" /></p>
+
+<hr />
+
+<h1 id="tenth-flag-1">Tenth flag</h1>
+
+<blockquote>
+  <p>What airport is closest to the location the attacker shared a photo from prior to getting on their flight?</p>
+</blockquote>
+
+<p>Taking a look at his Twitter, we found this:</p>
+
+<p><img src="/assets/Pasted image 20220701194313.png" alt="" /></p>
+
+<p>So far, I admit not being good at <strong>IMINT</strong><sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup>, I got caught up in this part, which motivated me to want to do the <a href="https://tryhackme.com/room/searchlightosint">Searchlight - IMINT room</a>, learn and explore more of this area. I didn’t know any tools either, so I had to rely on the help of others. However, I will try to illustrate it in a way that we can all <strong>learn!</strong>.</p>
+
+<p>In the image you can see an <strong>obelisk</strong> faaar awaay in the center of the image:</p>
+
+<p><img src="/assets/Pasted image 20220703012352.png" alt="" /></p>
+
+<p>I imagine that for those living at US it is something very identifiable just by looking at it, but for me it was impossible. I spent about half an hour looking for places near the coast of Japan, still not having made the connection that our invader was traveling not through Japanese lands, but in <strong>another country</strong>.</p>
+
+<p>The obelisk is the <strong>Washington Monument</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220703012933.png" alt="" /></p>
+
+<p>Then we look for airports that are close to the monument:</p>
+
+<p><img src="/assets/Pasted image 20220703020423.png" alt="" /></p>
+
+<p>The closest one is Ronald Reagan Washington National Airport. The format of this flag is three characters, so the one used here will be the airport code.</p>
+
+<p><img src="/assets/Pasted image 20220703020833.png" alt="" /></p>
+
+<hr />
+
+<h1 id="eleventh-flag">Eleventh flag</h1>
+
+<blockquote>
+  <p>What airport did the attacker have their last layover in?</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220703021109.png" alt="" /></p>
+
+<p>Reverse image search:</p>
+
+<p><img src="/assets/Pasted image 20220703021723.png" alt="" /></p>
+
+<p>We see already in the second result “<strong>Tokyo International Airport [Haneda]</strong>”.</p>
+
+<p>And then just go after the 3-digit code:</p>
+
+<p><img src="/assets/Pasted image 20220703022808.png" alt="" /></p>
+
+<hr />
+
+<h1 id="twelfth-flag">Twelfth flag</h1>
+<blockquote>
+  <p>What lake can be seen in the map shared by the attacker as they were on their final flight home?</p>
+</blockquote>
+
+<p>Also from Twitter:</p>
+
+<p><img src="/assets/Pasted image 20220703022955.png" alt="" /></p>
+
+<p>Just use a map and go for it, it is quite easy to find the place in Japan if you orient yourself by the islands to the northwest. We can easily get this one, since it is right under our noses:</p>
+
+<p><img src="/assets/Pasted image 20220703023300.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703023357.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703023333.png" alt="" /></p>
+
+<h1 id="thirteenth-flag">Thirteenth flag</h1>
+<blockquote>
+  <p>What city does the attacker likely consider “home”?</p>
+</blockquote>
+
+<p><strong>Two</strong> ways are possible to getting this flag:</p>
+<ul>
+  <li>See in <strong>which city</strong> that <strong>BSSID we put in the Wigle earlier</strong> is in</li>
+  <li>Use the <strong>BSSID</strong> of <strong>Aiko’s city WiFi</strong> from the Deep Paste</li>
+</ul>
+
+<hr />
+
+<h1 id="footnotes">Footnotes</h1>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>Open Source Intelligence <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>Pretty Good Privacy <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Read about <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">public-key criptography</a>. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>Basic Service Set Identifier; It usually refers to the MAC address, that is, a unique identifier of an adapter or an access point. Or it will be a derivation of it. Reference: https:/<a href="https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses">/www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses</a> <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:5" role="doc-endnote">
+      <p><a href="https://en.wikipedia.org/wiki/Imagery_intelligence">Imagery Intelligence</a> <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</article>
+
+
+      </div>
+    </main><script data-goatcounter="https://rubick.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
+<noscript>
+  <img src="https://rubick.goatcounter.com/count?p=/test-img">
+</noscript>
+  </body>
+</html>

