@@ -1,0 +1,26 @@
+---
+layout: default
+---
+<header>
+  {% for lang in site.languages %}
+  {% if forloop.index0 == 0 %}
+    <a href="{{ page.url }}" class="footer__link">{{ lang }}</a>
+  {% else %}
+    | <a href="/{{ lang }}{{ page.url }}" class="footer__link">{{ lang }}</a>
+  {% endif %}
+  {% endfor %}
+  
+  <h1>{{ site.title }}</h1>
+  {%-if site.theme_config.show_description-%}
+    <p>{{ site.description }}</p>
+  {%-endif-%}
+  
+</header>
+
+{% if site.lang == "en" %}
+{%-include menu_item.html collection=site.data.menu.entries.en-%}
+{% elsif site.lang == "pt-br"%}
+{%-include menu_item.html collection=site.data.menu.entries.pt-br-%}
+{% endif %}
+
+{{ content }}
