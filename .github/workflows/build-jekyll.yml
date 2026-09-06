@@ -22,25 +22,26 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
-       - name: Setup Ruby
-         uses: ruby/setup-ruby@v1
-         with:
-           ruby-version: '3.2'
-           bundler-cache: true
 
-       - name: Install bundler and gems
-         run: |
-           gem install bundler
-           bundle config path vendor/bundle
-           bundle install --jobs 4 --retry 3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
 
-       - name: Build Jekyll site
-         run: bundle exec jekyll build
+      - name: Install bundler and gems
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
 
-       - name: Deploy to GitHub Pages
-         uses: peaceiris/actions-gh-pages@v3
-         with:
-           github_token: ${{ secrets.GITHUB_TOKEN }}
-           publish_dir: ./_site
-           publish_branch: gh-pages
-           force_orphan: true
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          force_orphan: true
